@@ -1,0 +1,44 @@
+.scan-section {
+  margin-bottom: 1.5rem;
+}
+
+.upload-form {
+  display: flex;
+  justify-content: center;
+}
+
+.file-input {
+  display: none;
+}
+
+.upload-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.upload-button:hover {
+  background-color: #2563eb;
+}
+
+.camera-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.loading {
+  text-align: center;
+  margin-top: 1rem;
+  color: #6b7280;
+}
+
+.hidden {
+  display: none;
+} 

@@ -1,0 +1,479 @@
+2025-06-17 10:59:07,148 - main - INFO - Starting FastAPI application
+2025-06-17 10:59:07,148 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 10:59:07,148 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 10:59:48,118 - main - INFO - Starting FastAPI application
+2025-06-17 10:59:48,118 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 10:59:48,118 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 11:02:18,918 - main - INFO - Starting FastAPI application
+2025-06-17 11:02:18,919 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 11:02:18,919 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 11:03:10,802 - main - INFO - Starting FastAPI application
+2025-06-17 11:03:10,803 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 11:03:10,803 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 11:04:54,138 - main - INFO - Starting FastAPI application
+2025-06-17 11:04:54,138 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 11:04:54,138 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 11:05:40,363 - python_multipart.multipart - DEBUG - Calling on_part_begin with no data
+2025-06-17 11:05:40,364 - python_multipart.multipart - DEBUG - Calling on_header_field with data[42:61]
+2025-06-17 11:05:40,364 - python_multipart.multipart - DEBUG - Calling on_header_value with data[63:111]
+2025-06-17 11:05:40,364 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-06-17 11:05:40,364 - python_multipart.multipart - DEBUG - Calling on_header_field with data[113:125]
+2025-06-17 11:05:40,364 - python_multipart.multipart - DEBUG - Calling on_header_value with data[127:137]
+2025-06-17 11:05:40,364 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-06-17 11:05:40,364 - python_multipart.multipart - DEBUG - Calling on_headers_finished with no data
+2025-06-17 11:05:40,365 - python_multipart.multipart - DEBUG - Calling on_part_data with data[141:261397]
+2025-06-17 11:05:40,366 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:05:40,367 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:05:40,368 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:05:40,368 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:05:40,369 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:64864]
+2025-06-17 11:05:40,369 - python_multipart.multipart - DEBUG - Calling on_part_end with no data
+2025-06-17 11:05:40,369 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-06-17 11:05:40,374 - main - INFO - Processing file: IMG_4134.jpg
+2025-06-17 11:05:40,374 - ocr_processor - INFO - File extension check for IMG_4134.jpg: allowed
+2025-06-17 11:05:40,375 - main - INFO - Saving file to: uploads/IMG_4134.jpg
+2025-06-17 11:05:40,375 - main - INFO - Starting OCR processing for: IMG_4134.jpg
+2025-06-17 11:05:40,375 - ocr_processor - INFO - Processing image: uploads/IMG_4134.jpg
+2025-06-17 11:05:40,425 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 11:05:40,425 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 11:05:40,425 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x13Q\x8a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xa8^\x00\x13F\x00\x00\x00\x00\x00'
+2025-06-17 11:05:40,426 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 11:05:40,426 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 11:05:40,426 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x13Q\x8a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xa8^\x00\x13F\x00\x00\x00\x00\x00'
+2025-06-17 11:05:40,465 - PIL.TiffImagePlugin - DEBUG - tag: Make (271) - type: string (2) Tag Location: 22 - Data Location: 158 - value: b'Apple\x00'
+2025-06-17 11:05:40,465 - PIL.TiffImagePlugin - DEBUG - tag: Model (272) - type: string (2) Tag Location: 34 - Data Location: 164 - value: b'iPhone 14 Pro\x00'
+2025-06-17 11:05:40,465 - PIL.TiffImagePlugin - DEBUG - tag: Orientation (274) - type: short (3) - value: b'\x00\x08'
+2025-06-17 11:05:40,465 - PIL.TiffImagePlugin - DEBUG - tag: XResolution (282) - type: rational (5) Tag Location: 58 - Data Location: 178 - value: b'\x00\x00\x00H\x00\x00\x00\x01'
+2025-06-17 11:05:40,465 - PIL.TiffImagePlugin - DEBUG - tag: YResolution (283) - type: rational (5) Tag Location: 70 - Data Location: 186 - value: b'\x00\x00\x00H\x00\x00\x00\x01'
+2025-06-17 11:05:40,465 - PIL.TiffImagePlugin - DEBUG - tag: ResolutionUnit (296) - type: short (3) - value: b'\x00\x02'
+2025-06-17 11:05:40,465 - PIL.TiffImagePlugin - DEBUG - tag: Software (305) - type: string (2) Tag Location: 94 - Data Location: 194 - value: b'18.5\x00'
+2025-06-17 11:05:40,465 - PIL.TiffImagePlugin - DEBUG - tag: DateTime (306) - type: string (2) Tag Location: 106 - Data Location: 200 - value: b'2025:06:16 16:27:25\x00'
+2025-06-17 11:05:40,465 - PIL.TiffImagePlugin - DEBUG - tag: HostComputer (316) - type: string (2) Tag Location: 118 - Data Location: 220 - value: b'iPhone 14 Pro\x00'
+2025-06-17 11:05:40,465 - PIL.TiffImagePlugin - DEBUG - tag: YCbCrPositioning (531) - type: short (3) - value: b'\x00\x01'
+2025-06-17 11:05:40,465 - PIL.TiffImagePlugin - DEBUG - tag: ExifIFD (34665) - type: long (4) - value: b'\x00\x00\x00\xea'
+2025-06-17 11:05:40,465 - PIL.TiffImagePlugin - DEBUG - tag: GPSInfoIFD (34853) - type: long (4) - value: b'\x00\x00\n('
+2025-06-17 11:05:44,518 - ocr_processor - ERROR - Error processing image uploads/IMG_4134.jpg: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+Traceback (most recent call last):
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/ocr_processor.py", line 25, in process_image
+    result = self.reader.readtext(image_path)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 468, in readtext
+    result = self.recognize(img_cv_grey, horizontal_list, free_list,\
+                            decoder, beamWidth, batch_size,\
+                            workers, allowlist, blocklist, detail, rotation_info,\
+                            paragraph, contrast_ths, adjust_contrast,\
+                            filter_ths, y_ths, x_ths, False, output_format)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 383, in recognize
+    image_list, max_width = get_image_list(h_list, f_list, img_cv_grey, model_height = imgH)
+                            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 613, in get_image_list
+    crop_img,ratio = compute_ratio_and_resize(crop_img,width,height,model_height)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 574, in compute_ratio_and_resize
+    img = cv2.resize(img,(model_height,int(model_height*ratio)), interpolation=Image.Resampling.LANCZOS)
+cv2.error: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+
+2025-06-17 11:05:44,520 - main - ERROR - Error processing file IMG_4134.jpg: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+Traceback (most recent call last):
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/main.py", line 82, in upload_files
+    extracted_text = await ocr_processor.process_image(file_path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/ocr_processor.py", line 25, in process_image
+    result = self.reader.readtext(image_path)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 468, in readtext
+    result = self.recognize(img_cv_grey, horizontal_list, free_list,\
+                            decoder, beamWidth, batch_size,\
+                            workers, allowlist, blocklist, detail, rotation_info,\
+                            paragraph, contrast_ths, adjust_contrast,\
+                            filter_ths, y_ths, x_ths, False, output_format)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 383, in recognize
+    image_list, max_width = get_image_list(h_list, f_list, img_cv_grey, model_height = imgH)
+                            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 613, in get_image_list
+    crop_img,ratio = compute_ratio_and_resize(crop_img,width,height,model_height)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 574, in compute_ratio_and_resize
+    img = cv2.resize(img,(model_height,int(model_height*ratio)), interpolation=Image.Resampling.LANCZOS)
+cv2.error: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+
+2025-06-17 11:05:44,522 - main - INFO - Temporary file removed: uploads/IMG_4134.jpg
+2025-06-17 11:05:57,533 - python_multipart.multipart - DEBUG - Calling on_part_begin with no data
+2025-06-17 11:05:57,533 - python_multipart.multipart - DEBUG - Calling on_header_field with data[42:61]
+2025-06-17 11:05:57,533 - python_multipart.multipart - DEBUG - Calling on_header_value with data[63:111]
+2025-06-17 11:05:57,533 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-06-17 11:05:57,533 - python_multipart.multipart - DEBUG - Calling on_header_field with data[113:125]
+2025-06-17 11:05:57,533 - python_multipart.multipart - DEBUG - Calling on_header_value with data[127:137]
+2025-06-17 11:05:57,533 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-06-17 11:05:57,533 - python_multipart.multipart - DEBUG - Calling on_headers_finished with no data
+2025-06-17 11:05:57,534 - python_multipart.multipart - DEBUG - Calling on_part_data with data[141:261508]
+2025-06-17 11:05:57,535 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:05:57,535 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:05:57,535 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:05:57,536 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:05:57,537 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:64753]
+2025-06-17 11:05:57,537 - python_multipart.multipart - DEBUG - Calling on_part_end with no data
+2025-06-17 11:05:57,537 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-06-17 11:05:57,538 - main - INFO - Processing file: IMG_4134.jpg
+2025-06-17 11:05:57,538 - ocr_processor - INFO - File extension check for IMG_4134.jpg: allowed
+2025-06-17 11:05:57,538 - main - INFO - Saving file to: uploads/IMG_4134.jpg
+2025-06-17 11:05:57,538 - main - INFO - Starting OCR processing for: IMG_4134.jpg
+2025-06-17 11:05:57,538 - ocr_processor - INFO - Processing image: uploads/IMG_4134.jpg
+2025-06-17 11:05:57,560 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 11:05:57,561 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 11:05:57,561 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x13Q\x8a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xa8^\x00\x13F\x00\x00\x00\x00\x00'
+2025-06-17 11:05:57,561 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 11:05:57,561 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 11:05:57,561 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x13Q\x8a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xa8^\x00\x13F\x00\x00\x00\x00\x00'
+2025-06-17 11:05:57,588 - PIL.TiffImagePlugin - DEBUG - tag: Make (271) - type: string (2) Tag Location: 22 - Data Location: 158 - value: b'Apple\x00'
+2025-06-17 11:05:57,588 - PIL.TiffImagePlugin - DEBUG - tag: Model (272) - type: string (2) Tag Location: 34 - Data Location: 164 - value: b'iPhone 14 Pro\x00'
+2025-06-17 11:05:57,588 - PIL.TiffImagePlugin - DEBUG - tag: Orientation (274) - type: short (3) - value: b'\x00\x08'
+2025-06-17 11:05:57,588 - PIL.TiffImagePlugin - DEBUG - tag: XResolution (282) - type: rational (5) Tag Location: 58 - Data Location: 178 - value: b'\x00\x00\x00H\x00\x00\x00\x01'
+2025-06-17 11:05:57,588 - PIL.TiffImagePlugin - DEBUG - tag: YResolution (283) - type: rational (5) Tag Location: 70 - Data Location: 186 - value: b'\x00\x00\x00H\x00\x00\x00\x01'
+2025-06-17 11:05:57,588 - PIL.TiffImagePlugin - DEBUG - tag: ResolutionUnit (296) - type: short (3) - value: b'\x00\x02'
+2025-06-17 11:05:57,588 - PIL.TiffImagePlugin - DEBUG - tag: Software (305) - type: string (2) Tag Location: 94 - Data Location: 194 - value: b'18.5\x00'
+2025-06-17 11:05:57,588 - PIL.TiffImagePlugin - DEBUG - tag: DateTime (306) - type: string (2) Tag Location: 106 - Data Location: 200 - value: b'2025:06:16 16:27:25\x00'
+2025-06-17 11:05:57,588 - PIL.TiffImagePlugin - DEBUG - tag: HostComputer (316) - type: string (2) Tag Location: 118 - Data Location: 220 - value: b'iPhone 14 Pro\x00'
+2025-06-17 11:05:57,588 - PIL.TiffImagePlugin - DEBUG - tag: YCbCrPositioning (531) - type: short (3) - value: b'\x00\x01'
+2025-06-17 11:05:57,588 - PIL.TiffImagePlugin - DEBUG - tag: ExifIFD (34665) - type: long (4) - value: b'\x00\x00\x00\xea'
+2025-06-17 11:05:57,588 - PIL.TiffImagePlugin - DEBUG - tag: GPSInfoIFD (34853) - type: long (4) - value: b'\x00\x00\n('
+2025-06-17 11:05:59,324 - ocr_processor - ERROR - Error processing image uploads/IMG_4134.jpg: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+Traceback (most recent call last):
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/ocr_processor.py", line 25, in process_image
+    result = self.reader.readtext(image_path)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 468, in readtext
+    result = self.recognize(img_cv_grey, horizontal_list, free_list,\
+                            decoder, beamWidth, batch_size,\
+                            workers, allowlist, blocklist, detail, rotation_info,\
+                            paragraph, contrast_ths, adjust_contrast,\
+                            filter_ths, y_ths, x_ths, False, output_format)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 383, in recognize
+    image_list, max_width = get_image_list(h_list, f_list, img_cv_grey, model_height = imgH)
+                            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 613, in get_image_list
+    crop_img,ratio = compute_ratio_and_resize(crop_img,width,height,model_height)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 574, in compute_ratio_and_resize
+    img = cv2.resize(img,(model_height,int(model_height*ratio)), interpolation=Image.Resampling.LANCZOS)
+cv2.error: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+
+2025-06-17 11:05:59,324 - main - ERROR - Error processing file IMG_4134.jpg: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+Traceback (most recent call last):
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/main.py", line 82, in upload_files
+    extracted_text = await ocr_processor.process_image(file_path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/ocr_processor.py", line 25, in process_image
+    result = self.reader.readtext(image_path)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 468, in readtext
+    result = self.recognize(img_cv_grey, horizontal_list, free_list,\
+                            decoder, beamWidth, batch_size,\
+                            workers, allowlist, blocklist, detail, rotation_info,\
+                            paragraph, contrast_ths, adjust_contrast,\
+                            filter_ths, y_ths, x_ths, False, output_format)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 383, in recognize
+    image_list, max_width = get_image_list(h_list, f_list, img_cv_grey, model_height = imgH)
+                            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 613, in get_image_list
+    crop_img,ratio = compute_ratio_and_resize(crop_img,width,height,model_height)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 574, in compute_ratio_and_resize
+    img = cv2.resize(img,(model_height,int(model_height*ratio)), interpolation=Image.Resampling.LANCZOS)
+cv2.error: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+
+2025-06-17 11:05:59,326 - main - INFO - Temporary file removed: uploads/IMG_4134.jpg
+2025-06-17 11:06:22,193 - python_multipart.multipart - DEBUG - Calling on_part_begin with no data
+2025-06-17 11:06:22,194 - python_multipart.multipart - DEBUG - Calling on_header_field with data[42:61]
+2025-06-17 11:06:22,194 - python_multipart.multipart - DEBUG - Calling on_header_value with data[63:111]
+2025-06-17 11:06:22,194 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-06-17 11:06:22,194 - python_multipart.multipart - DEBUG - Calling on_header_field with data[113:125]
+2025-06-17 11:06:22,194 - python_multipart.multipart - DEBUG - Calling on_header_value with data[127:137]
+2025-06-17 11:06:22,194 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-06-17 11:06:22,194 - python_multipart.multipart - DEBUG - Calling on_headers_finished with no data
+2025-06-17 11:06:22,195 - python_multipart.multipart - DEBUG - Calling on_part_data with data[141:261508]
+2025-06-17 11:06:22,196 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:06:22,196 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:06:22,198 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:06:22,198 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:06:22,199 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:64753]
+2025-06-17 11:06:22,199 - python_multipart.multipart - DEBUG - Calling on_part_end with no data
+2025-06-17 11:06:22,199 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-06-17 11:06:22,200 - main - INFO - Processing file: IMG_4134.jpg
+2025-06-17 11:06:22,200 - ocr_processor - INFO - File extension check for IMG_4134.jpg: allowed
+2025-06-17 11:06:22,200 - main - INFO - Saving file to: uploads/IMG_4134.jpg
+2025-06-17 11:06:22,201 - main - INFO - Starting OCR processing for: IMG_4134.jpg
+2025-06-17 11:06:22,201 - ocr_processor - INFO - Processing image: uploads/IMG_4134.jpg
+2025-06-17 11:06:22,247 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 11:06:22,247 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 11:06:22,247 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x13Q\x8a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xa8^\x00\x13F\x00\x00\x00\x00\x00'
+2025-06-17 11:06:22,247 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 11:06:22,247 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 11:06:22,247 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x13Q\x8a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xa8^\x00\x13F\x00\x00\x00\x00\x00'
+2025-06-17 11:06:22,283 - PIL.TiffImagePlugin - DEBUG - tag: Make (271) - type: string (2) Tag Location: 22 - Data Location: 158 - value: b'Apple\x00'
+2025-06-17 11:06:22,283 - PIL.TiffImagePlugin - DEBUG - tag: Model (272) - type: string (2) Tag Location: 34 - Data Location: 164 - value: b'iPhone 14 Pro\x00'
+2025-06-17 11:06:22,283 - PIL.TiffImagePlugin - DEBUG - tag: Orientation (274) - type: short (3) - value: b'\x00\x08'
+2025-06-17 11:06:22,283 - PIL.TiffImagePlugin - DEBUG - tag: XResolution (282) - type: rational (5) Tag Location: 58 - Data Location: 178 - value: b'\x00\x00\x00H\x00\x00\x00\x01'
+2025-06-17 11:06:22,283 - PIL.TiffImagePlugin - DEBUG - tag: YResolution (283) - type: rational (5) Tag Location: 70 - Data Location: 186 - value: b'\x00\x00\x00H\x00\x00\x00\x01'
+2025-06-17 11:06:22,283 - PIL.TiffImagePlugin - DEBUG - tag: ResolutionUnit (296) - type: short (3) - value: b'\x00\x02'
+2025-06-17 11:06:22,283 - PIL.TiffImagePlugin - DEBUG - tag: Software (305) - type: string (2) Tag Location: 94 - Data Location: 194 - value: b'18.5\x00'
+2025-06-17 11:06:22,283 - PIL.TiffImagePlugin - DEBUG - tag: DateTime (306) - type: string (2) Tag Location: 106 - Data Location: 200 - value: b'2025:06:16 16:27:25\x00'
+2025-06-17 11:06:22,283 - PIL.TiffImagePlugin - DEBUG - tag: HostComputer (316) - type: string (2) Tag Location: 118 - Data Location: 220 - value: b'iPhone 14 Pro\x00'
+2025-06-17 11:06:22,283 - PIL.TiffImagePlugin - DEBUG - tag: YCbCrPositioning (531) - type: short (3) - value: b'\x00\x01'
+2025-06-17 11:06:22,283 - PIL.TiffImagePlugin - DEBUG - tag: ExifIFD (34665) - type: long (4) - value: b'\x00\x00\x00\xea'
+2025-06-17 11:06:22,283 - PIL.TiffImagePlugin - DEBUG - tag: GPSInfoIFD (34853) - type: long (4) - value: b'\x00\x00\n('
+2025-06-17 11:06:24,314 - ocr_processor - ERROR - Error processing image uploads/IMG_4134.jpg: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+Traceback (most recent call last):
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/ocr_processor.py", line 25, in process_image
+    result = self.reader.readtext(image_path)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 468, in readtext
+    result = self.recognize(img_cv_grey, horizontal_list, free_list,\
+                            decoder, beamWidth, batch_size,\
+                            workers, allowlist, blocklist, detail, rotation_info,\
+                            paragraph, contrast_ths, adjust_contrast,\
+                            filter_ths, y_ths, x_ths, False, output_format)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 383, in recognize
+    image_list, max_width = get_image_list(h_list, f_list, img_cv_grey, model_height = imgH)
+                            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 613, in get_image_list
+    crop_img,ratio = compute_ratio_and_resize(crop_img,width,height,model_height)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 574, in compute_ratio_and_resize
+    img = cv2.resize(img,(model_height,int(model_height*ratio)), interpolation=Image.Resampling.LANCZOS)
+cv2.error: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+
+2025-06-17 11:06:24,314 - main - ERROR - Error processing file IMG_4134.jpg: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+Traceback (most recent call last):
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/main.py", line 82, in upload_files
+    extracted_text = await ocr_processor.process_image(file_path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/ocr_processor.py", line 25, in process_image
+    result = self.reader.readtext(image_path)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 468, in readtext
+    result = self.recognize(img_cv_grey, horizontal_list, free_list,\
+                            decoder, beamWidth, batch_size,\
+                            workers, allowlist, blocklist, detail, rotation_info,\
+                            paragraph, contrast_ths, adjust_contrast,\
+                            filter_ths, y_ths, x_ths, False, output_format)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 383, in recognize
+    image_list, max_width = get_image_list(h_list, f_list, img_cv_grey, model_height = imgH)
+                            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 613, in get_image_list
+    crop_img,ratio = compute_ratio_and_resize(crop_img,width,height,model_height)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 574, in compute_ratio_and_resize
+    img = cv2.resize(img,(model_height,int(model_height*ratio)), interpolation=Image.Resampling.LANCZOS)
+cv2.error: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+
+2025-06-17 11:06:24,316 - main - INFO - Temporary file removed: uploads/IMG_4134.jpg
+2025-06-17 11:07:59,214 - main - INFO - Starting FastAPI application
+2025-06-17 11:07:59,215 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 11:07:59,215 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 11:08:35,674 - main - INFO - Starting FastAPI application
+2025-06-17 11:08:35,675 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 11:08:35,675 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 11:08:42,097 - python_multipart.multipart - DEBUG - Calling on_part_begin with no data
+2025-06-17 11:08:42,097 - python_multipart.multipart - DEBUG - Calling on_header_field with data[42:61]
+2025-06-17 11:08:42,097 - python_multipart.multipart - DEBUG - Calling on_header_value with data[63:111]
+2025-06-17 11:08:42,097 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-06-17 11:08:42,097 - python_multipart.multipart - DEBUG - Calling on_header_field with data[113:125]
+2025-06-17 11:08:42,098 - python_multipart.multipart - DEBUG - Calling on_header_value with data[127:137]
+2025-06-17 11:08:42,098 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-06-17 11:08:42,098 - python_multipart.multipart - DEBUG - Calling on_headers_finished with no data
+2025-06-17 11:08:42,098 - python_multipart.multipart - DEBUG - Calling on_part_data with data[141:261542]
+2025-06-17 11:08:42,098 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:08:42,099 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:08:42,099 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:08:42,099 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:08:42,100 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:64719]
+2025-06-17 11:08:42,100 - python_multipart.multipart - DEBUG - Calling on_part_end with no data
+2025-06-17 11:08:42,100 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-06-17 11:08:42,104 - main - INFO - Processing file: IMG_4134.jpg
+2025-06-17 11:08:42,104 - ocr_processor - INFO - File extension check for IMG_4134.jpg: allowed
+2025-06-17 11:08:42,105 - main - INFO - Saving file to: uploads/IMG_4134.jpg
+2025-06-17 11:08:42,105 - main - INFO - Starting OCR processing for: IMG_4134.jpg
+2025-06-17 11:08:42,105 - ocr_processor - INFO - Processing image: uploads/IMG_4134.jpg
+2025-06-17 11:08:42,138 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 11:08:42,138 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 11:08:42,138 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x13Q\x8a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xa8^\x00\x13F\x00\x00\x00\x00\x00'
+2025-06-17 11:08:42,139 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 11:08:42,139 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 11:08:42,139 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x13Q\x8a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xa8^\x00\x13F\x00\x00\x00\x00\x00'
+2025-06-17 11:08:42,169 - PIL.TiffImagePlugin - DEBUG - tag: Make (271) - type: string (2) Tag Location: 22 - Data Location: 158 - value: b'Apple\x00'
+2025-06-17 11:08:42,169 - PIL.TiffImagePlugin - DEBUG - tag: Model (272) - type: string (2) Tag Location: 34 - Data Location: 164 - value: b'iPhone 14 Pro\x00'
+2025-06-17 11:08:42,169 - PIL.TiffImagePlugin - DEBUG - tag: Orientation (274) - type: short (3) - value: b'\x00\x08'
+2025-06-17 11:08:42,169 - PIL.TiffImagePlugin - DEBUG - tag: XResolution (282) - type: rational (5) Tag Location: 58 - Data Location: 178 - value: b'\x00\x00\x00H\x00\x00\x00\x01'
+2025-06-17 11:08:42,169 - PIL.TiffImagePlugin - DEBUG - tag: YResolution (283) - type: rational (5) Tag Location: 70 - Data Location: 186 - value: b'\x00\x00\x00H\x00\x00\x00\x01'
+2025-06-17 11:08:42,169 - PIL.TiffImagePlugin - DEBUG - tag: ResolutionUnit (296) - type: short (3) - value: b'\x00\x02'
+2025-06-17 11:08:42,169 - PIL.TiffImagePlugin - DEBUG - tag: Software (305) - type: string (2) Tag Location: 94 - Data Location: 194 - value: b'18.5\x00'
+2025-06-17 11:08:42,169 - PIL.TiffImagePlugin - DEBUG - tag: DateTime (306) - type: string (2) Tag Location: 106 - Data Location: 200 - value: b'2025:06:16 16:27:25\x00'
+2025-06-17 11:08:42,169 - PIL.TiffImagePlugin - DEBUG - tag: HostComputer (316) - type: string (2) Tag Location: 118 - Data Location: 220 - value: b'iPhone 14 Pro\x00'
+2025-06-17 11:08:42,169 - PIL.TiffImagePlugin - DEBUG - tag: YCbCrPositioning (531) - type: short (3) - value: b'\x00\x01'
+2025-06-17 11:08:42,169 - PIL.TiffImagePlugin - DEBUG - tag: ExifIFD (34665) - type: long (4) - value: b'\x00\x00\x00\xea'
+2025-06-17 11:08:42,169 - PIL.TiffImagePlugin - DEBUG - tag: GPSInfoIFD (34853) - type: long (4) - value: b'\x00\x00\n('
+2025-06-17 11:08:43,947 - ocr_processor - ERROR - Error processing image uploads/IMG_4134.jpg: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+Traceback (most recent call last):
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/ocr_processor.py", line 25, in process_image
+    result = self.reader.readtext(image_path)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 468, in readtext
+    result = self.recognize(img_cv_grey, horizontal_list, free_list,\
+                            decoder, beamWidth, batch_size,\
+                            workers, allowlist, blocklist, detail, rotation_info,\
+                            paragraph, contrast_ths, adjust_contrast,\
+                            filter_ths, y_ths, x_ths, False, output_format)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 383, in recognize
+    image_list, max_width = get_image_list(h_list, f_list, img_cv_grey, model_height = imgH)
+                            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 613, in get_image_list
+    crop_img,ratio = compute_ratio_and_resize(crop_img,width,height,model_height)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 574, in compute_ratio_and_resize
+    img = cv2.resize(img,(model_height,int(model_height*ratio)), interpolation=Image.Resampling.LANCZOS)
+cv2.error: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+
+2025-06-17 11:08:43,949 - main - ERROR - Error processing file IMG_4134.jpg: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+Traceback (most recent call last):
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/main.py", line 86, in upload_files
+    extracted_text = await ocr_processor.process_image(file_path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/ocr_processor.py", line 25, in process_image
+    result = self.reader.readtext(image_path)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 468, in readtext
+    result = self.recognize(img_cv_grey, horizontal_list, free_list,\
+                            decoder, beamWidth, batch_size,\
+                            workers, allowlist, blocklist, detail, rotation_info,\
+                            paragraph, contrast_ths, adjust_contrast,\
+                            filter_ths, y_ths, x_ths, False, output_format)
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/easyocr.py", line 383, in recognize
+    image_list, max_width = get_image_list(h_list, f_list, img_cv_grey, model_height = imgH)
+                            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 613, in get_image_list
+    crop_img,ratio = compute_ratio_and_resize(crop_img,width,height,model_height)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kang-yeongmo/Bootcamp_KDT/OCR_Project/backend/venv/lib/python3.13/site-packages/easyocr/utils.py", line 574, in compute_ratio_and_resize
+    img = cv2.resize(img,(model_height,int(model_height*ratio)), interpolation=Image.Resampling.LANCZOS)
+cv2.error: OpenCV(4.11.0) /Users/xperience/GHA-Actions-OpenCV/_work/opencv-python/opencv-python/opencv/modules/imgproc/src/resize.cpp:4208: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+
+2025-06-17 11:08:43,951 - main - INFO - Temporary file removed: uploads/IMG_4134.jpg
+2025-06-17 11:10:23,456 - main - INFO - Starting FastAPI application
+2025-06-17 11:10:23,456 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 11:10:23,456 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 11:11:03,354 - main - INFO - Starting FastAPI application
+2025-06-17 11:11:03,354 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 11:11:03,354 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 11:11:09,642 - python_multipart.multipart - DEBUG - Calling on_part_begin with no data
+2025-06-17 11:11:09,644 - python_multipart.multipart - DEBUG - Calling on_header_field with data[42:61]
+2025-06-17 11:11:09,645 - python_multipart.multipart - DEBUG - Calling on_header_value with data[63:111]
+2025-06-17 11:11:09,645 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-06-17 11:11:09,645 - python_multipart.multipart - DEBUG - Calling on_header_field with data[113:125]
+2025-06-17 11:11:09,645 - python_multipart.multipart - DEBUG - Calling on_header_value with data[127:137]
+2025-06-17 11:11:09,645 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-06-17 11:11:09,645 - python_multipart.multipart - DEBUG - Calling on_headers_finished with no data
+2025-06-17 11:11:09,646 - python_multipart.multipart - DEBUG - Calling on_part_data with data[141:65536]
+2025-06-17 11:11:09,646 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:11:09,647 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:11:09,648 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:11:09,649 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:262144]
+2025-06-17 11:11:09,650 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:260725]
+2025-06-17 11:11:09,650 - python_multipart.multipart - DEBUG - Calling on_part_end with no data
+2025-06-17 11:11:09,650 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-06-17 11:11:09,656 - main - INFO - Processing file: IMG_4134.jpg
+2025-06-17 11:11:09,656 - ocr_processor - INFO - File extension check for IMG_4134.jpg: allowed
+2025-06-17 11:11:09,656 - main - INFO - Saving file to: uploads/IMG_4134.jpg
+2025-06-17 11:11:09,658 - main - INFO - Starting OCR processing for: IMG_4134.jpg
+2025-06-17 11:11:09,658 - ocr_processor - INFO - Processing image: uploads/IMG_4134.jpg
+2025-06-17 11:11:09,668 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 11:11:09,668 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 11:11:09,668 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x13Q\x8a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xa8^\x00\x13F\x00\x00\x00\x00\x00'
+2025-06-17 11:11:09,668 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 11:11:09,668 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 11:11:09,668 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x13Q\x8a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xa8^\x00\x13F\x00\x00\x00\x00\x00'
+2025-06-17 11:11:09,668 - ocr_processor - INFO - Image is too large, resizing...
+2025-06-17 11:11:10,378 - PIL.PngImagePlugin - DEBUG - STREAM b'IHDR' 16 13
+2025-06-17 11:11:10,378 - PIL.PngImagePlugin - DEBUG - STREAM b'iCCP' 41 362
+2025-06-17 11:11:10,378 - PIL.PngImagePlugin - DEBUG - iCCP profile name b'ICC Profile'
+2025-06-17 11:11:10,378 - PIL.PngImagePlugin - DEBUG - Compression method 0
+2025-06-17 11:11:10,378 - PIL.PngImagePlugin - DEBUG - STREAM b'IDAT' 415 65536
+2025-06-17 11:11:10,378 - PIL.PngImagePlugin - DEBUG - STREAM b'IHDR' 16 13
+2025-06-17 11:11:10,378 - PIL.PngImagePlugin - DEBUG - STREAM b'iCCP' 41 362
+2025-06-17 11:11:10,378 - PIL.PngImagePlugin - DEBUG - iCCP profile name b'ICC Profile'
+2025-06-17 11:11:10,378 - PIL.PngImagePlugin - DEBUG - Compression method 0
+2025-06-17 11:11:10,378 - PIL.PngImagePlugin - DEBUG - STREAM b'IDAT' 415 65536
+2025-06-17 11:11:12,286 - ocr_processor - INFO - Successfully extracted 19 text segments from image
+2025-06-17 11:11:12,289 - main - INFO - OCR processing completed for: IMG_4134.jpg
+2025-06-17 11:11:12,289 - main - INFO - Extracted text: ['거', '품', '푹', '용', '품 o', 'F7', 'F77', '8', '@', '4B', '물', '8', '%', '출륭', '1', '출', '흙', '층', '힘']
+2025-06-17 11:11:12,289 - main - INFO - Temporary file removed: uploads/IMG_4134.jpg
+2025-06-17 15:44:39,660 - main - INFO - Starting FastAPI application
+2025-06-17 15:44:39,660 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 15:44:39,660 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 15:47:43,308 - main - INFO - Starting FastAPI application
+2025-06-17 15:47:43,308 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 15:47:43,308 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 15:47:53,063 - main - INFO - Starting FastAPI application
+2025-06-17 15:47:53,063 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 15:47:53,063 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 15:48:16,522 - main - INFO - Starting FastAPI application
+2025-06-17 15:48:16,522 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 15:48:16,522 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 15:55:12,648 - main - INFO - Starting FastAPI application
+2025-06-17 15:55:12,649 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 15:55:12,649 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 15:56:02,576 - main - INFO - Starting FastAPI application
+2025-06-17 15:56:02,576 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 15:56:02,576 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 16:06:19,018 - main - INFO - Starting FastAPI application
+2025-06-17 16:06:19,018 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 16:06:19,018 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 16:06:33,802 - main - INFO - Starting FastAPI application
+2025-06-17 16:06:33,803 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 16:06:33,803 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 16:06:49,494 - main - INFO - Starting FastAPI application
+2025-06-17 16:06:49,494 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 16:06:49,494 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 16:11:15,633 - main - INFO - Starting FastAPI application
+2025-06-17 16:11:15,633 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 16:11:15,633 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 16:23:57,646 - main - INFO - Starting FastAPI application
+2025-06-17 16:23:57,647 - ocr_processor - INFO - Initializing OCR Processor
+2025-06-17 16:23:57,647 - ocr_processor - INFO - Loading EasyOCR model for Korean and English
+2025-06-17 17:06:17,422 - python_multipart.multipart - DEBUG - Calling on_part_begin with no data
+2025-06-17 17:06:17,424 - python_multipart.multipart - DEBUG - Calling on_header_field with data[42:61]
+2025-06-17 17:06:17,424 - python_multipart.multipart - DEBUG - Calling on_header_value with data[63:113]
+2025-06-17 17:06:17,424 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-06-17 17:06:17,424 - python_multipart.multipart - DEBUG - Calling on_header_field with data[115:127]
+2025-06-17 17:06:17,424 - python_multipart.multipart - DEBUG - Calling on_header_value with data[129:139]
+2025-06-17 17:06:17,424 - python_multipart.multipart - DEBUG - Calling on_header_end with no data
+2025-06-17 17:06:17,424 - python_multipart.multipart - DEBUG - Calling on_headers_finished with no data
+2025-06-17 17:06:17,424 - python_multipart.multipart - DEBUG - Calling on_part_data with data[143:261432]
+2025-06-17 17:06:17,426 - python_multipart.multipart - DEBUG - Calling on_part_data with data[0:249178]
+2025-06-17 17:06:17,426 - python_multipart.multipart - DEBUG - Calling on_part_end with no data
+2025-06-17 17:06:17,426 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2025-06-17 17:06:17,428 - main - INFO - Processing file: IMG_4134 2.jpg
+2025-06-17 17:06:17,428 - ocr_processor - INFO - File extension check for IMG_4134 2.jpg: allowed
+2025-06-17 17:06:17,428 - main - INFO - Saving file to: uploads/IMG_4134 2.jpg
+2025-06-17 17:06:17,429 - main - INFO - Starting OCR processing for: IMG_4134 2.jpg
+2025-06-17 17:06:17,429 - ocr_processor - INFO - Processing image: uploads/IMG_4134 2.jpg
+2025-06-17 17:06:17,448 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 17:06:17,448 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 17:06:17,448 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x07$\x08\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xa5\xfb\x00\x07\x18~\x00\x00\x00\x00'
+2025-06-17 17:06:17,449 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 17:06:17,449 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 17:06:17,449 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x07$\x08\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xa5\xfb\x00\x07\x18~\x00\x00\x00\x00'
+2025-06-17 17:06:17,462 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 17:06:17,462 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 17:06:17,462 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x07$\x08\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xa5\xfb\x00\x07\x18~\x00\x00\x00\x00'
+2025-06-17 17:06:17,463 - PIL.TiffImagePlugin - DEBUG - tag: MPFVersion (45056) - type: undefined (7) - value: b'0100'
+2025-06-17 17:06:17,463 - PIL.TiffImagePlugin - DEBUG - tag: NumberOfImages (45057) - type: long (4) - value: b'\x00\x00\x00\x02'
+2025-06-17 17:06:17,463 - PIL.TiffImagePlugin - DEBUG - tag: MPEntry (45058) - type: undefined (7) Tag Location: 46 - Data Location: 50 - value: b'\x00\x03\x00\x00\x00\x07$\x08\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xa5\xfb\x00\x07\x18~\x00\x00\x00\x00'
+2025-06-17 17:06:17,478 - PIL.TiffImagePlugin - DEBUG - tag: Make (271) - type: string (2) Tag Location: 22 - Data Location: 158 - value: b'Apple\x00'
+2025-06-17 17:06:17,479 - PIL.TiffImagePlugin - DEBUG - tag: Model (272) - type: string (2) Tag Location: 34 - Data Location: 164 - value: b'iPhone 14 Pro\x00'
+2025-06-17 17:06:17,479 - PIL.TiffImagePlugin - DEBUG - tag: Orientation (274) - type: short (3) - value: b'\x00\x01'
+2025-06-17 17:06:17,479 - PIL.TiffImagePlugin - DEBUG - tag: XResolution (282) - type: rational (5) Tag Location: 58 - Data Location: 178 - value: b'\x00\x00\x00H\x00\x00\x00\x01'
+2025-06-17 17:06:17,479 - PIL.TiffImagePlugin - DEBUG - tag: YResolution (283) - type: rational (5) Tag Location: 70 - Data Location: 186 - value: b'\x00\x00\x00H\x00\x00\x00\x01'
+2025-06-17 17:06:17,479 - PIL.TiffImagePlugin - DEBUG - tag: ResolutionUnit (296) - type: short (3) - value: b'\x00\x02'
+2025-06-17 17:06:17,479 - PIL.TiffImagePlugin - DEBUG - tag: Software (305) - type: string (2) Tag Location: 94 - Data Location: 194 - value: b'18.5\x00'
+2025-06-17 17:06:17,479 - PIL.TiffImagePlugin - DEBUG - tag: DateTime (306) - type: string (2) Tag Location: 106 - Data Location: 200 - value: b'2025:06:16 16:27:25\x00'
+2025-06-17 17:06:17,479 - PIL.TiffImagePlugin - DEBUG - tag: HostComputer (316) - type: string (2) Tag Location: 118 - Data Location: 220 - value: b'iPhone 14 Pro\x00'
+2025-06-17 17:06:17,479 - PIL.TiffImagePlugin - DEBUG - tag: YCbCrPositioning (531) - type: short (3) - value: b'\x00\x01'
+2025-06-17 17:06:17,479 - PIL.TiffImagePlugin - DEBUG - tag: ExifIFD (34665) - type: long (4) - value: b'\x00\x00\x00\xea'
+2025-06-17 17:06:17,479 - PIL.TiffImagePlugin - DEBUG - tag: GPSInfoIFD (34853) - type: long (4) - value: b'\x00\x00\n('
+2025-06-17 17:06:19,174 - ocr_processor - INFO - Successfully extracted 20 text segments from image
+2025-06-17 17:06:19,174 - main - INFO - OCR processing completed for: IMG_4134 2.jpg
+2025-06-17 17:06:19,174 - main - INFO - Extracted text: ['더', '물', '푹', '품', '0부', 'F7', 'FT7', '흉', '@', '0요', '물 @', 'H', '{', '흙', '훌#', '움', '흙', '움', '층', '필']
+2025-06-17 17:06:19,176 - main - INFO - Temporary file removed: uploads/IMG_4134 2.jpg
