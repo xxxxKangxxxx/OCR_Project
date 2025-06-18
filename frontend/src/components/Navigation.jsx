@@ -1,11 +1,15 @@
 import React, { useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useBusinessCards } from '../utils/useLocalStorage.js';
 import './Navigation.css';
+import { parseOCRText } from '../utils/ocrParser';
 
 const Navigation = () => {
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { saveCard, refreshCards } = useBusinessCards();
   
   // API URL을 환경에 따라 동적으로 설정
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -136,7 +140,7 @@ const Navigation = () => {
           const results = await response.json();
           console.log('✅ 업로드 결과:', results);
           
-          // 결과 처리
+          // 결과 처리 및 로컬스토리지 저장
           if (Array.isArray(results)) {
             const hasError = results.some(result => result.error);
             if (hasError) {
@@ -146,7 +150,48 @@ const Navigation = () => {
                 .join('\n');
               alert(`파일 처리 중 오류가 발생했습니다:\n${errorMessages}`);
             } else {
-              alert('파일이 성공적으로 업로드되었습니다.');
+              // 성공한 결과들을 로컬스토리지에 저장
+              let savedCount = 0;
+              results.forEach(result => {
+                if (result.extracted_text && result.extracted_text.length > 0 && !result.error) {
+                  try {
+                    const parsedData = parseOCRText(result.extracted_text);
+                    
+                    // 최소한의 정보가 있는 경우에만 저장
+                    if (parsedData.name || parsedData.email || parsedData.phone || parsedData.company_name) {
+                      const cardData = {
+                        ...parsedData,
+                        original_filename: result.filename,
+                        company: null  // company 객체 제거
+                      };
+                      
+                      console.log('Saving card data:', cardData);
+                      const success = saveCard(cardData);
+                      if (success) {
+                        savedCount++;
+                      }
+                    }
+                  } catch (parseError) {
+                    console.error('OCR 결과 파싱 오류:', parseError);
+                  }
+                }
+              });
+              
+              // 성공 메시지 표시
+              const message = `🎉 명함 처리 완료!\n\n처리된 파일: ${results.length}개\n저장된 명함: ${savedCount}개`;
+              
+              // 저장된 명함이 있으면 자동으로 홈으로 이동
+              if (savedCount > 0) {
+                alert(message + '\n\n홈페이지로 이동합니다!');
+                
+                // 데이터 새로고침 후 홈으로 이동
+                refreshCards(); // 로컬스토리지 데이터 새로고침
+                setTimeout(() => {
+                  navigate('/'); // 홈페이지로 이동
+                }, 500);
+              } else {
+                alert(message);
+              }
             }
           } else {
             throw new Error('서버 응답 형식이 올바르지 않습니다.');

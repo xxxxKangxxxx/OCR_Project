@@ -1,150 +1,224 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useBusinessCards } from '../utils/useLocalStorage';
+import './CompanyCards.css';
+
+// 모달 컴포넌트
+const EditCardModal = ({ card, isOpen, onClose, onSave }) => {
+  const [editedCard, setEditedCard] = useState(card);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditedCard(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(editedCard);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>명함 수정</h2>
+          <button className="close-button" onClick={onClose}>&times;</button>
+        </div>
+        <form onSubmit={handleSubmit} className="edit-form">
+          <div className="form-group">
+            <label htmlFor="name">이름</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={editedCard.name || ''}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="position">직책</label>
+            <input
+              type="text"
+              id="position"
+              name="position"
+              value={editedCard.position || ''}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="department">부서</label>
+            <input
+              type="text"
+              id="department"
+              name="department"
+              value={editedCard.department || ''}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="email">이메일</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={editedCard.email || ''}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="phone">전화번호</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={editedCard.phone || ''}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="mobile">휴대폰</label>
+            <input
+              type="tel"
+              id="mobile"
+              name="mobile"
+              value={editedCard.mobile || ''}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="fax">팩스</label>
+            <input
+              type="tel"
+              id="fax"
+              name="fax"
+              value={editedCard.fax || ''}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="address">주소</label>
+            <input
+              type="text"
+              id="address"
+              name="address"
+              value={editedCard.address || ''}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-actions">
+            <button type="submit" className="save-button">저장</button>
+            <button type="button" onClick={onClose} className="cancel-button">취소</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 const CompanyCards = () => {
   const { companyName } = useParams();
   const navigate = useNavigate();
+  const { cards, updateCard } = useBusinessCards();
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 임시 데이터 (나중에 실제 데이터로 교체)
-  const cards = [
-    { id: 1, name: '홍길동', position: '과장', department: '영업1팀', email: 'hong@company.com', phone: '010-1234-5678' },
-    { id: 2, name: '김철수', position: '대리', department: '영업2팀', email: 'kim@company.com', phone: '010-2345-6789' },
-  ];
+  // 현재 회사의 명함만 필터링
+  const companyCards = cards.filter(card => 
+    card.company?.name === decodeURIComponent(companyName) ||
+    card.company_name === decodeURIComponent(companyName)
+  );
+
+  const handleEditClick = (card) => {
+    setSelectedCard(card);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveCard = (editedCard) => {
+    const success = updateCard(editedCard.id, editedCard);
+    if (success) {
+      alert('명함이 수정되었습니다.');
+    } else {
+      alert('명함 수정에 실패했습니다.');
+    }
+  };
 
   return (
-    <main className="main-content">
+    <div className="company-cards">
       <div className="company-header">
         <button className="back-button" onClick={() => navigate('/')}>
-          ← 뒤로가기
+          &larr; 뒤로
         </button>
-        <h2>{decodeURIComponent(companyName)}</h2>
-        <p className="card-count">{cards.length}개의 명함</p>
+        <h1>{decodeURIComponent(companyName)}</h1>
       </div>
-
-      <div className="cards-container">
-        {cards.map(card => (
+      
+      <div className="cards-grid">
+        {companyCards.map(card => (
           <div key={card.id} className="business-card">
             <div className="card-header">
-              <h3>{card.name}</h3>
-              <span className="position">{card.position}</span>
+              <div className="card-main-info">
+                <h2 className="name">{card.name}</h2>
+                <p className="position">{card.position}</p>
+                <p className="department">{card.department}</p>
+              </div>
+              <div className="card-actions">
+                <button
+                  className="action-button"
+                  onClick={() => handleEditClick(card)}
+                >
+                  <img src="/edit-icon.svg" alt="편집" />
+                </button>
+                <button className="action-button">
+                  <img src="/share-icon.svg" alt="공유" />
+                </button>
+              </div>
             </div>
-            <div className="card-body">
-              <p className="department">{card.department}</p>
-              <p className="contact">{card.email}</p>
-              <p className="contact">{card.phone}</p>
-            </div>
-            <div className="card-actions">
-              <button className="edit-button">
-                <img src="/edit-icon.svg" alt="Edit" />
-              </button>
-              <button className="share-button">
-                <img src="/share-icon.svg" alt="Share" />
-              </button>
+            
+            <div className="card-details">
+              {card.email && (
+                <p className="contact-info">
+                  <span className="label">이메일:</span> {card.email}
+                </p>
+              )}
+              {card.phone && (
+                <p className="contact-info">
+                  <span className="label">전화:</span> {card.phone}
+                </p>
+              )}
+              {card.mobile && (
+                <p className="contact-info">
+                  <span className="label">휴대폰:</span> {card.mobile}
+                </p>
+              )}
+              {card.fax && (
+                <p className="contact-info">
+                  <span className="label">팩스:</span> {card.fax}
+                </p>
+              )}
+              {card.address && (
+                <p className="contact-info">
+                  <span className="label">주소:</span> {card.address}
+                </p>
+              )}
             </div>
           </div>
         ))}
       </div>
 
-      <style>{`
-        .company-header {
-          padding: 20px;
-          margin-bottom: 20px;
-        }
-
-        .back-button {
-          background: none;
-          border: none;
-          font-size: 16px;
-          color: #666;
-          cursor: pointer;
-          padding: 0;
-          margin-bottom: 16px;
-          display: flex;
-          align-items: center;
-        }
-
-        .back-button:hover {
-          color: #333;
-        }
-
-        .company-header h2 {
-          font-size: 24px;
-          margin: 0 0 8px 0;
-          color: #333;
-        }
-
-        .card-count {
-          color: #666;
-          margin: 0;
-        }
-
-        .cards-container {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 20px;
-          padding: 20px;
-        }
-
-        .business-card {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          padding: 20px;
-          position: relative;
-        }
-
-        .card-header {
-          margin-bottom: 15px;
-        }
-
-        .card-header h3 {
-          margin: 0;
-          font-size: 18px;
-          color: #333;
-        }
-
-        .position {
-          color: #666;
-          font-size: 14px;
-          display: block;
-          margin-top: 4px;
-        }
-
-        .department {
-          color: #666;
-          font-size: 14px;
-          margin: 4px 0;
-        }
-
-        .contact {
-          color: #888;
-          font-size: 14px;
-          margin: 4px 0;
-        }
-
-        .card-actions {
-          position: absolute;
-          top: 20px;
-          right: 20px;
-          display: flex;
-          gap: 10px;
-        }
-
-        .edit-button,
-        .share-button {
-          background: none;
-          border: none;
-          cursor: pointer;
-          padding: 5px;
-        }
-
-        .edit-button img,
-        .share-button img {
-          width: 20px;
-          height: 20px;
-        }
-      `}</style>
-    </main>
+      {selectedCard && (
+        <EditCardModal
+          card={selectedCard}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleSaveCard}
+        />
+      )}
+    </div>
   );
 };
 

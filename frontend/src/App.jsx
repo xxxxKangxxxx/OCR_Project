@@ -6,6 +6,7 @@ import Layout from './components/Layout'
 import HomePage from './components/HomePage';
 import CompanyCards from './components/CompanyCards';
 import MyPage from './components/MyPage';
+import LocalStorageDemo from './components/LocalStorageDemo';
 
 // 페이지 이동 시 스크롤을 맨 위로 이동시키는 컴포넌트
 function ScrollToTop() {
@@ -74,6 +75,10 @@ function AppContent() {
         <Route 
           path="/mypage" 
           element={<MyPage key={`mypage-${location.pathname}-${Date.now()}`} />} 
+        />
+        <Route 
+          path="/demo" 
+          element={<LocalStorageDemo key={`demo-${location.pathname}-${Date.now()}`} />} 
         />
         <Route 
           path="/" 

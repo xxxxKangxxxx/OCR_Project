@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import CardGroup from './CardGroup';
+import { useBusinessCards } from '../utils/useLocalStorage.js';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -11,6 +12,9 @@ const HomePage = () => {
     return savedColors ? JSON.parse(savedColors) : {};
   });
   const dropdownRef = useRef(null);
+  
+  // 로컬스토리지에서 실제 명함 데이터 가져오기
+  const { cards } = useBusinessCards();
 
   // 컴포넌트 마운트 시 스크롤 초기화
   useEffect(() => {
@@ -96,50 +100,35 @@ const HomePage = () => {
     setIsDropdownOpen(false);
   };
 
-  // 임시 데이터
-  const cardGroups = [
-    {
-      id: 1,
-      title: "삼성전자",
-      cards: [
-        { id: 1, name: "홍길동", position: "과장", department: "영업1팀" },
-        { id: 2, name: "김철수", position: "대리", department: "영업2팀" },
-      ]
-    },
-    {
-      id: 2,
-      title: "LG전자",
-      cards: [
-        { id: 3, name: "이영희", position: "부장", department: "마케팅팀" },
-      ]
-    },
-    {
-      id: 3,
-      title: '네이버',
-      cards: [
-        { id: 4, name: '박지성', position: '책임연구원' },
-        { id: 5, name: '손흥민', position: '선임연구원' },
-        { id: 6, name: '김민재', position: '연구원' },
-      ]
-    },
-    {
-      id: 4,
-      title: '카카오',
-      cards: [
-        { id: 7, name: '이강인', position: '팀장' },
-        { id: 8, name: '황희찬', position: '매니저' },
-      ]
-    },
-    {
-      id: 5,
-      title: 'SK하이닉스',
-      cards: [
-        { id: 9, name: '김연아', position: '수석' },
-        { id: 10, name: '박태환', position: '책임' },
-        { id: 11, name: '이상화', position: '선임' },
-      ]
+  // 로컬스토리지의 실제 데이터를 회사별로 그룹화
+  const cardGroups = useMemo(() => {
+    if (!cards || cards.length === 0) {
+      return [{
+        id: 'empty',
+        title: '저장된 명함이 없습니다',
+        cards: []
+      }];
     }
-  ];
+
+    // 회사별로 그룹화
+    const groupedByCompany = cards.reduce((acc, card) => {
+      const companyName = card.company_name || '회사명 없음';
+      if (!acc[companyName]) {
+        acc[companyName] = [];
+      }
+      acc[companyName].push(card);
+      return acc;
+    }, {});
+
+    console.log('Grouped Cards:', groupedByCompany);
+
+    // 배열 형태로 변환
+    return Object.entries(groupedByCompany).map(([companyName, companyCards], index) => ({
+      id: index + 1,
+      title: companyName,
+      cards: companyCards
+    }));
+  }, [cards, groupBy]);
 
   return (
     <div className="homepage">
