@@ -1,0 +1,39 @@
+:root {
+  --navigation-height: 60px;
+  --navigation-padding: 0.4rem;
+  --navigation-total-height: calc(var(--navigation-height) + var(--navigation-padding) * 2 + 1px);
+}
+
+.layout {
+  width: 100%;
+  height: 100vh; /* min-height에서 고정 height로 변경 */
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  position: relative;
+  overflow: hidden; /* 전체 레이아웃에서 스크롤 방지 */
+}
+
+.layout-content {
+  flex: 1;
+  overflow: hidden; /* 스크롤 제거 - 각 페이지에서 관리 */
+  width: 100%;
+  height: calc(100vh - 60px); /* 헤더 높이만 제외 (네비게이션은 fixed이므로 제외하지 않음) */
+  position: relative;
+  /* 하단에 네비게이션바를 위한 안전 영역 추가 */
+  padding-bottom: var(--navigation-total-height);
+  box-sizing: border-box;
+}
+
+.layout-navigation {
+  width: 390px;
+  height: var(--navigation-height);
+  padding: var(--navigation-padding) 1rem;
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+} 

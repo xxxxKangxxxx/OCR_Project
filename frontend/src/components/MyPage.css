@@ -1,0 +1,588 @@
+/* MyPage.css */
+.mypage {
+  width: 100%;
+  height: 100%; /* 전체 높이 사용 */
+  padding: 0 16px 1rem 16px; /* 기본 패딩만 유지 */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  overflow-y: auto; /* 자체 스크롤 관리 */
+  overflow-x: hidden; /* 좌우 스크롤 방지 */
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y; /* 좌우 드래그 방지, 세로 스크롤만 허용 */
+  /* 추가 안전 여백 - Layout에서 이미 padding-bottom이 있지만 더 확실하게 */
+  padding-bottom: calc(var(--navigation-total-height) + 1rem) !important;
+  box-sizing: border-box;
+}
+
+.mypage::after {
+  content: '';
+  display: block;
+  height: var(--navigation-total-height);
+  width: 100%;
+  /* 추가 안전 여백 */
+  margin-bottom: 1rem;
+}
+
+/* 헤더 영역 */
+.mypage-header {
+  padding: 24px 0;
+  margin-bottom: 24px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.avatar-container {
+  position: relative;
+}
+
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  object-fit: cover;
+  background: linear-gradient(45deg, #4A90E2, #67B26F);
+}
+
+.user-avatar.default-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background: linear-gradient(45deg, #4A90E2, #67B26F);
+}
+
+.avatar-edit-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #4A90E2;
+  border: 2px solid white;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.avatar-edit-btn:hover {
+  background: #357ABD;
+  transform: scale(1.1);
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-name {
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.user-email {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  margin: 0 0 4px 0;
+}
+
+.join-date {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* 통계 그리드 */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.stat-icon.total-cards {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-icon.total-companies {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.stat-icon.favorite-cards {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stat-icon.recent-scans {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 4px 0;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+/* 탭 영역 */
+.mypage-tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tab-button {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-button.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: 600;
+}
+
+.tab-button:not(.active):hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 탭 컨텐츠 */
+.tab-content {
+  min-height: 400px;
+}
+
+.section-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 20px 0;
+}
+
+.section-title.danger {
+  color: #e74c3c;
+}
+
+.section-description {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin: 0 0 20px 0;
+  line-height: 1.5;
+}
+
+/* 폼 요소 */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #4A90E2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.update-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.update-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* 활동 목록 */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border-left: 4px solid #4A90E2;
+}
+
+.activity-icon {
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(74, 144, 226, 0.1);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-text {
+  font-size: 14px;
+  color: #2c3e50;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.activity-time {
+  font-size: 12px;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+/* 설정 항목 */
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-info h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 4px 0;
+}
+
+.setting-info p {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+/* 토글 스위치 */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(26px);
+}
+
+/* 언어 선택 */
+.language-select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+}
+
+.language-select:focus {
+  outline: none;
+  border-color: #4A90E2;
+}
+
+/* 내보내기 옵션 */
+.export-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border: 2px solid #e9ecef;
+  background: white;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.export-btn:hover {
+  border-color: #4A90E2;
+  background: #f8f9fa;
+  transform: translateY(-1px);
+}
+
+.export-btn.csv:hover {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.export-btn.json:hover {
+  border-color: #17a2b8;
+  color: #17a2b8;
+}
+
+/* 위험 구역 */
+.danger-zone {
+  border: 1px solid #f8d7da;
+  background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+}
+
+.danger-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.danger-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.danger-btn:hover {
+  background: #c0392b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .mypage {
+    padding: 0 12px 80px 12px;
+  }
+  
+  .user-profile {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .stat-card {
+    padding: 16px;
+  }
+  
+  .section-card {
+    padding: 20px;
+  }
+  
+  .mypage-tabs {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .tab-button {
+    padding: 10px 12px;
+  }
+  
+  .setting-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .export-options {
+    gap: 8px;
+  }
+  
+  .export-btn {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}
+
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .mypage {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  }
+  
+  .section-card {
+    background: rgba(52, 73, 94, 0.95);
+    color: white;
+  }
+  
+  .section-title {
+    color: #ecf0f1;
+  }
+  
+  .section-description {
+    color: #bdc3c7;
+  }
+  
+  .form-group label {
+    color: #ecf0f1;
+  }
+  
+  .form-group input {
+    background: #34495e;
+    border-color: #4a6741;
+    color: white;
+  }
+  
+  .activity-item {
+    background: #3a5169;
+  }
+  
+  .activity-text {
+    color: #ecf0f1;
+  }
+  
+  .setting-info h4 {
+    color: #ecf0f1;
+  }
+  
+  .setting-info p {
+    color: #bdc3c7;
+  }
+} 

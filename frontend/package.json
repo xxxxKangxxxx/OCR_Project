@@ -1,7 +1,8 @@
 {
-  "name": "frontend",
+  "name": "cardlet",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "AI 기반 명함 스캔 및 OCR 서비스",
   "type": "module",
   "scripts": {
     "dev": "vite --host --port 5174",
