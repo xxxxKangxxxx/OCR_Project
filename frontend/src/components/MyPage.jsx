@@ -6,7 +6,8 @@ const MyPage = () => {
     name: '김철수',
     email: 'chulsoo@example.com',
     avatar: null,
-    joinDate: '2024.01.15'
+    joinDate: '2024.01.15',
+    avatarColor: '#4A90E2'
   });
 
   const [stats, setStats] = useState({
@@ -47,7 +48,8 @@ const MyPage = () => {
       name: '김철수',
       email: 'chulsoo@example.com',
       avatar: null,
-      joinDate: '2024.01.15'
+      joinDate: '2024.01.15',
+      avatarColor: '#4A90E2'
     });
 
     // 설정 초기화 (실제로는 API에서 가져올 것)
@@ -92,6 +94,26 @@ const MyPage = () => {
     }
   };
 
+  // 아바타 색상 변경 함수
+  const handleAvatarColorChange = () => {
+    const colors = [
+      '#4A90E2', // 파란색
+      '#67B26F', // 초록색  
+      '#E74C3C', // 빨간색
+      '#F39C12', // 주황색
+      '#9B59B6', // 보라색
+      '#1ABC9C', // 청록색
+      '#34495E', // 회색
+      '#E67E22'  // 진한 주황색
+    ];
+    
+    const currentIndex = colors.indexOf(user.avatarColor);
+    const nextIndex = (currentIndex + 1) % colors.length;
+    const newColor = colors[nextIndex];
+    
+    setUser(prev => ({ ...prev, avatarColor: newColor }));
+  };
+
   return (
     <div className="mypage">
       <div className="mypage-header">
@@ -100,19 +122,13 @@ const MyPage = () => {
             {user.avatar ? (
               <img src={user.avatar} alt="프로필" className="user-avatar" />
             ) : (
-              <div className="user-avatar default-avatar">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <div className="user-avatar default-avatar" style={{ backgroundColor: user.avatarColor }}>
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
               </div>
             )}
-            <button className="avatar-edit-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-            </button>
           </div>
           <div className="user-info">
             <h2 className="user-name">{user.name}</h2>
