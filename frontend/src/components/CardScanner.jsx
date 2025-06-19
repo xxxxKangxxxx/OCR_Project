@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { API_ENDPOINTS } from '../utils/config';
 import './CardScanner.css';
 
 const CardScanner = ({ onScanComplete }) => {
@@ -11,13 +12,17 @@ const CardScanner = ({ onScanComplete }) => {
 
     setIsLoading(true);
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('files', file);
 
     try {
-      const response = await fetch('http://localhost:8000/api/ocr', {
+      const response = await fetch(API_ENDPOINTS.OCR, {
         method: 'POST',
         body: formData,
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       
       const data = await response.json();
       onScanComplete(data.text);
@@ -44,7 +49,7 @@ const CardScanner = ({ onScanComplete }) => {
           className="upload-button"
           onClick={() => fileInputRef.current?.click()}
         >
-          <img src="/camera-icon.svg" alt="카메라" className="camera-icon" />
+          <img src="camera-icon.svg" alt="카메라" className="camera-icon" />
           <span>{isLoading ? '처리중...' : '명함 스캔하기'}</span>
         </label>
       </form>

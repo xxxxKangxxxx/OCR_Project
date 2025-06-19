@@ -30,6 +30,35 @@ class ProcessingResult(BaseModel):
     extracted_text: List[str]
     error: str = None
 
+class OCRResult(BaseModel):
+    text: List[str]
+    error: str = None
+
+@app.post("/api/ocr", response_model=OCRResult)
+async def process_ocr(file: UploadFile = File(...)):
+    try:
+        # 파일 읽기
+        contents = await file.read()
+        
+        # 이미지로 변환
+        image = Image.open(io.BytesIO(contents))
+        image_np = np.array(image)
+        
+        # OCR 처리
+        ocr_result = reader.readtext(image_np)
+        extracted_text = [text[1] for text in ocr_result]
+        
+        return {
+            "text": extracted_text,
+            "error": None
+        }
+        
+    except Exception as e:
+        return {
+            "text": [],
+            "error": str(e)
+        }
+
 @app.post("/api/upload", response_model=List[ProcessingResult])
 async def upload_files(files: List[UploadFile] = File(...)):
     results = []

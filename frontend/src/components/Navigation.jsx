@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useBusinessCards } from '../utils/useLocalStorage.js';
 import './Navigation.css';
 import { parseOCRText } from '../utils/ocrParser';
+import { API_ENDPOINTS } from '../utils/config';
 
 const Navigation = () => {
   const fileInputRef = useRef(null);
@@ -11,7 +12,7 @@ const Navigation = () => {
   const navigate = useNavigate();
   const { saveCard, refreshCards } = useBusinessCards();
   
-  // API URL을 환경에 따라 동적으로 설정
+  // API URL을 환경에 따라 동적으로 설정 (네트워크 테스트용)
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
   const handleFileUpload = async (event) => {
@@ -115,9 +116,8 @@ const Navigation = () => {
           console.log('🌐 API URL:', API_URL);
           alert(`서버로 업로드 시작...\nAPI URL: ${API_URL}`);
 
-          const response = await fetch(`${API_URL}/api/upload`, {
+          const response = await fetch(API_ENDPOINTS.UPLOAD, {
             method: 'POST',
-            mode: 'cors',
             headers: {
               'Accept': 'application/json',
             },

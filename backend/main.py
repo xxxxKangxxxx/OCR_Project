@@ -45,6 +45,76 @@ class ProcessingResult(BaseModel):
     extracted_text: List[str] = []
     error: Optional[str] = None
 
+class OCRResult(BaseModel):
+    text: List[str]
+    error: Optional[str] = None
+
+@app.get("/")
+async def root():
+    """OCR 서버 상태 확인"""
+    return {
+        "message": "✅ OCR 서버가 정상적으로 실행 중입니다!",
+        "status": "running",
+        "available_endpoints": [
+            "/api/ocr (POST) - OCR 처리",
+            "/api/upload (POST) - 파일 업로드 및 OCR",
+            "/docs - API 문서"
+        ]
+    }
+
+@app.post("/api/ocr", response_model=OCRResult)
+async def process_ocr(files: List[UploadFile] = File(...)):
+    """OCR 전용 엔드포인트 - 프론트엔드 호환성을 위해 추가"""
+    try:
+        # 첫 번째 파일만 처리 (단일 파일 OCR용)
+        file = files[0] if files else None
+        if not file:
+            return OCRResult(text=[], error="파일이 없습니다.")
+        
+        logger.info(f"📥 OCR request for file: {file.filename}")
+        
+        if not file.filename:
+            logger.warning("⚠️ Empty filename received")
+            return OCRResult(text=[], error="파일명이 없습니다.")
+            
+        if not ocr_processor.allowed_file(file.filename):
+            logger.warning(f"⚠️ Unsupported file type: {file.filename}")
+            return OCRResult(text=[], error="지원하지 않는 파일 형식입니다.")
+
+        # uploads 폴더가 없으면 생성
+        if not os.path.exists(UPLOAD_FOLDER):
+            os.makedirs(UPLOAD_FOLDER)
+
+        # 파일 저장
+        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        try:
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            logger.info(f"📁 File saved: {file_path}")
+            
+            # OCR 처리
+            ocr_result = await ocr_processor.process_image(file_path)
+            logger.info(f"✅ OCR processing completed for {file.filename}")
+            
+            return OCRResult(text=ocr_result, error=None)
+            
+        except Exception as e:
+            logger.error(f"❌ Error processing OCR for {file.filename}: {str(e)}", exc_info=True)
+            return OCRResult(text=[], error=f"OCR 처리 중 오류가 발생했습니다: {str(e)}")
+            
+        finally:
+            # 임시 파일 삭제
+            try:
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    logger.info(f"🗑 Temporary file removed: {file_path}")
+            except Exception as e:
+                logger.error(f"Error removing temporary file {file_path}: {str(e)}")
+                
+    except Exception as e:
+        logger.error(f"❌ OCR endpoint error: {str(e)}", exc_info=True)
+        return OCRResult(text=[], error=f"서버 오류가 발생했습니다: {str(e)}")
+
 @app.post("/api/upload", response_model=List[ProcessingResult])
 async def upload_files(files: List[UploadFile] = File(...)):
     results = []

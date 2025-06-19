@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useBusinessCards } from '../utils/useLocalStorage.js';
 import { parseOCRText } from '../utils/ocrParser';
+import { API_ENDPOINTS } from '../utils/config';
 
 const OCRCardAdder = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,10 +27,10 @@ const OCRCardAdder = () => {
 
     setIsLoading(true);
     const formDataForOCR = new FormData();
-    formDataForOCR.append('image', file);
+    formDataForOCR.append('files', file);
 
     try {
-      const response = await fetch('http://localhost:8000/api/ocr', {
+      const response = await fetch(API_ENDPOINTS.OCR, {
         method: 'POST',
         body: formDataForOCR,
       });
