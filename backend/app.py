@@ -1,15 +1,16 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-import easyocr
 import cv2
 import numpy as np
 from PIL import Image
 import io
 import os
+import tempfile
 from datetime import datetime
 import logging
 from pydantic import BaseModel
+from ocr_processor import OCRProcessor
 
 app = FastAPI()
 
@@ -22,8 +23,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# OCR 리더 초기화
-reader = easyocr.Reader(['ko', 'en'])
+# OCR 프로세서 초기화
+upload_folder = "uploads"
+ocr_processor = OCRProcessor(upload_folder)
 
 class ProcessingResult(BaseModel):
     filename: str
@@ -36,17 +38,16 @@ class OCRResult(BaseModel):
 
 @app.post("/api/ocr", response_model=OCRResult)
 async def process_ocr(file: UploadFile = File(...)):
+    temp_file = None
     try:
-        # 파일 읽기
-        contents = await file.read()
+        # 임시 파일 생성
+        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{file.filename.split('.')[-1]}") as temp_file:
+            contents = await file.read()
+            temp_file.write(contents)
+            temp_file_path = temp_file.name
         
-        # 이미지로 변환
-        image = Image.open(io.BytesIO(contents))
-        image_np = np.array(image)
-        
-        # OCR 처리
-        ocr_result = reader.readtext(image_np)
-        extracted_text = [text[1] for text in ocr_result]
+        # OCR 처리 (고급 전처리 포함)
+        extracted_text = await ocr_processor.process_image(temp_file_path)
         
         return {
             "text": extracted_text,
@@ -58,23 +59,26 @@ async def process_ocr(file: UploadFile = File(...)):
             "text": [],
             "error": str(e)
         }
+    finally:
+        # 임시 파일 삭제
+        if temp_file and os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
 
 @app.post("/api/upload", response_model=List[ProcessingResult])
 async def upload_files(files: List[UploadFile] = File(...)):
     results = []
     
     for file in files:
+        temp_file = None
         try:
-            # 파일 읽기
-            contents = await file.read()
+            # 임시 파일 생성
+            with tempfile.NamedTemporaryFile(delete=False, suffix=f".{file.filename.split('.')[-1]}") as temp_file:
+                contents = await file.read()
+                temp_file.write(contents)
+                temp_file_path = temp_file.name
             
-            # 이미지로 변환
-            image = Image.open(io.BytesIO(contents))
-            image_np = np.array(image)
-            
-            # OCR 처리
-            ocr_result = reader.readtext(image_np)
-            extracted_text = [text[1] for text in ocr_result]
+            # OCR 처리 (고급 전처리 포함)
+            extracted_text = await ocr_processor.process_image(temp_file_path)
             
             results.append({
                 "filename": file.filename,
@@ -88,6 +92,10 @@ async def upload_files(files: List[UploadFile] = File(...)):
                 "extracted_text": [],
                 "error": str(e)
             })
+        finally:
+            # 임시 파일 삭제
+            if temp_file and os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
     
     return results
 

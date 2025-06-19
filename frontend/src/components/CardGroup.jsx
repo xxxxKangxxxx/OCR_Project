@@ -14,8 +14,12 @@ const CardGroup = ({ title, cards = [], backgroundColor, onColorChange }) => {
   };
 
   const handleGroupClick = () => {
-    if (!isColorPickerVisible) {
-      navigate(`/company/${encodeURIComponent(title)}`);
+    if (title === '전체 명함') {
+      navigate('/cards/all');
+    } else if (title.includes('등록')) {
+      navigate('/cards/date/' + encodeURIComponent(cards[0].created_at));
+    } else {
+      navigate('/company/' + encodeURIComponent(title));
     }
   };
 

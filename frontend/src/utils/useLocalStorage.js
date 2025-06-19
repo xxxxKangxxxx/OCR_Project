@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BusinessCardStorage, CompanyStorage, LocalStorageManager } from './localStorage.js';
+import { BusinessCardStorage, CompanyStorage, LocalStorageManager, UserStorage } from './localStorage.js';
 
 // 명함 데이터 관리 훅
 export function useBusinessCards() {
@@ -64,11 +64,11 @@ export function useBusinessCards() {
   };
 
   // 즐겨찾기 토글
-  const toggleFavorite = (id) => {
+  const toggleFavorite = async (cardId) => {
     try {
-      const success = BusinessCardStorage.toggleFavorite(id);
+      const success = BusinessCardStorage.toggleFavorite(cardId);
       if (success) {
-        loadCards(); // 데이터 새로고침
+        loadCards(); // 카드 목록 즉시 새로고침
         return true;
       }
       return false;
@@ -239,5 +239,70 @@ export function useStorageInfo() {
   return {
     storageInfo,
     updateStorageInfo
+  };
+}
+
+// 사용자 정보 관리 훅
+export function useUserInfo() {
+  const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadUserInfo();
+  }, []);
+
+  const loadUserInfo = () => {
+    try {
+      const info = UserStorage.getInfo();
+      setUserInfo(info);
+    } catch (error) {
+      console.error('사용자 정보 로드 실패:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveUserInfo = (info) => {
+    try {
+      const success = UserStorage.saveInfo(info);
+      if (success) {
+        setUserInfo(info);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('사용자 정보 저장 실패:', error);
+      return false;
+    }
+  };
+
+  return {
+    userInfo,
+    loading,
+    saveUserInfo
+  };
+}
+
+// 명함 통계 정보 훅
+export function useCardStats() {
+  const [stats, setStats] = useState({
+    totalCards: 0,
+    totalCompanies: 0,
+    favoriteCards: 0,
+    recentScans: []
+  });
+
+  const refreshStats = () => {
+    const newStats = BusinessCardStorage.getStats();
+    setStats(newStats);
+  };
+
+  useEffect(() => {
+    refreshStats();
+  }, []);
+
+  return {
+    stats,
+    refreshStats
   };
 } 

@@ -28,7 +28,7 @@ class OCRParser:
         
         # 직책 관련 키워드
         self.position_keywords = [
-            '대표', '이사', '부장', '과장', '차장', '대리', '주임', '사원', '팀장', '실장', 
+            '대표', '이사', '대표이사', '부장', '과장', '차장', '대리', '주임', '사원', '팀장', '실장', 
             'CEO', 'CTO', 'CFO', 'Manager', 'Director', 'President', '감사', '상무', '전무', 
             '본부장', '센터장', '사업부장', '팀리더', 'Lead', 'Senior', 'Principal'
         ]
@@ -194,46 +194,81 @@ class OCRParser:
         return None
     
     def _extract_company_name(self, text_data: List[str]) -> str:
-        """회사명 추출 (법인 형태 키워드 강화)"""
+        """회사명 추출 (길이 제한 완화 및 패턴 개선, 인접 키워드 병합)"""
         company_candidates = []
         
         # 법인 형태 키워드 리스트 (우선순위 높음)
         legal_form_keywords = ['주식회사', '(주)', '㈜', '유한회사', '(유)', '합자회사', '(합)', 
                               '합명회사', '유한책임회사', '(유책)', 'Co.', 'Ltd', 'Inc', 'Corp', 
-                              'Corporation', 'Company', 'Limited', 'LLC', 'LLP']
+                              'Corporation', 'Company', 'Limited', 'LLC', 'LLP', '사무소']
         
-        # 1. 법인 형태 키워드가 포함된 텍스트 최우선 처리
-        for text in text_data:
+        # 1. 인접 키워드 병합 처리 (OCR 띄어쓰기 오류 대응)
+        merged_texts = self._merge_adjacent_company_keywords(text_data, legal_form_keywords)
+        logger.info(f"병합 후 텍스트: {merged_texts}")
+        
+        # 2. 법인 형태 키워드가 포함된 텍스트 최우선 처리
+        for text in merged_texts:
             clean_text = text.strip()
             if any(keyword in clean_text for keyword in legal_form_keywords):
                 company_candidates.append(clean_text)
                 logger.info(f"법인 형태 키워드로 회사명 발견: {clean_text}")
         
-        # 2. 일반적인 회사 키워드가 포함된 텍스트
+        # 3. 일반적인 회사 키워드가 포함된 텍스트
         if not company_candidates:
-            for text in text_data:
+            for text in merged_texts:
                 clean_text = text.strip()
                 if any(keyword in clean_text for keyword in self.company_keywords):
                     company_candidates.append(clean_text)
+                    logger.info(f"회사 키워드로 회사명 발견: {clean_text}")
         
-        # 3. 회사 키워드가 없다면, 길이가 긴 텍스트나 특정 패턴 확인
+        # 4. 회사 키워드가 없다면, 더 유연한 패턴으로 회사명 후보 찾기
         if not company_candidates:
-            for text in text_data:
+            for text in merged_texts:
                 clean_text = text.strip()
-                # 길이가 5글자 이상이고, 숫자가 없고, 일반적인 이름 패턴이 아닌 경우
-                if (len(clean_text) > 5 and 
-                    not any(char.isdigit() for char in clean_text) and
-                    not re.match(r'^[가-힣]{2,4}$', clean_text) and  # 2-4글자 순수 한글이름 제외
-                    '@' not in clean_text and  # 이메일 제외
-                    not re.match(r'.*[대표이사부장과장차장대리주임사원팀장실장].*', clean_text)):  # 직책 제외
+                
+                # 제외할 패턴들
+                exclude_patterns = [
+                    r'^[가-힣]{2,4}$',  # 2-4글자 순수 한글 이름
+                    r'.*@.*',  # 이메일
+                    r'.*[0-9]{2,3}[-\s]?[0-9]{3,4}[-\s]?[0-9]{4}.*',  # 전화번호
+                    r'^[0-9\-\s\(\)]+$',  # 숫자와 기호만
+                    r'^[A-Za-z\s]+$'  # 순수 영문 (영문 이름일 가능성)
+                ]
+                
+                # 직책 키워드가 포함된 경우 제외
+                has_position = any(keyword in clean_text for keyword in self.position_keywords)
+                
+                # 제외 패턴에 해당하는지 확인
+                is_excluded = any(re.match(pattern, clean_text) for pattern in exclude_patterns)
+                
+                # 길이 조건을 완화: 2글자 이상이면 후보로 고려
+                if (len(clean_text) >= 2 and 
+                    not has_position and 
+                    not is_excluded and
+                    clean_text[0] not in self.common_surnames):  # 성씨로 시작하지 않는 경우
                     company_candidates.append(clean_text)
+                    logger.info(f"패턴 분석으로 회사명 후보 발견: {clean_text}")
         
-        # 4. 가장 적절한 회사명 선택
+        # 5. 여전히 후보가 없다면 더 관대한 조건으로 추가 검색
+        if not company_candidates:
+            for text in merged_texts:
+                clean_text = text.strip()
+                
+                # 이메일, 전화번호, 순수 숫자가 아닌 모든 텍스트를 후보로 고려
+                if (len(clean_text) >= 2 and 
+                    '@' not in clean_text and
+                    not re.match(r'^[0-9\-\s\(\)]+$', clean_text) and
+                    not re.match(r'.*[0-9]{2,3}[-\s]?[0-9]{3,4}[-\s]?[0-9]{4}.*', clean_text)):
+                    company_candidates.append(clean_text)
+                    logger.info(f"관대한 조건으로 회사명 후보 발견: {clean_text}")
+        
+        # 6. 가장 적절한 회사명 선택
         if company_candidates:
             # 법인 형태 키워드가 포함된 것 최우선
             legal_candidates = [text for text in company_candidates 
                               if any(keyword in text for keyword in legal_form_keywords)]
             if legal_candidates:
+                # 법인 형태 중에서는 가장 완전한 형태 선택
                 result = max(legal_candidates, key=len)
                 logger.info(f"법인 형태 기준으로 선택된 회사명: {result}")
                 return result
@@ -242,12 +277,22 @@ class OCRParser:
             keyword_candidates = [text for text in company_candidates 
                                 if any(keyword in text for keyword in self.company_keywords)]
             if keyword_candidates:
-                result = max(keyword_candidates, key=len)
-            else:
-                result = max(company_candidates, key=len)
+                # 키워드 포함 중에서는 적절한 길이 선택 (너무 길지 않게)
+                keyword_candidates.sort(key=lambda x: (len(x) > 20, -len(x)))  # 20글자 이하 우선, 그 다음 긴 순서
+                result = keyword_candidates[0]
+                logger.info(f"회사 키워드 기준으로 선택된 회사명: {result}")
+                return result
             
-            logger.info(f"회사명 후보들: {company_candidates}, 선택된 회사명: {result}")
+            # 키워드가 없는 경우, 적절한 길이의 텍스트 선택
+            company_candidates.sort(key=lambda x: (
+                abs(len(x) - 8),  # 8글자에 가까운 것 우선
+                len(x) > 30,      # 30글자 이상은 후순위
+                -len(x)           # 그 외에는 긴 것 우선
+            ))
+            result = company_candidates[0]
+            logger.info(f"패턴 분석으로 선택된 회사명: {result}")
             return result
+            
         elif text_data:
             # 후보가 없으면 첫 번째 텍스트 사용
             result = text_data[0]
@@ -256,96 +301,245 @@ class OCRParser:
         
         return None
     
-    def _extract_korean_name(self, text_data: List[str]) -> str:
-        """한국어 이름 추출 (대폭 개선된 로직)"""
-        name_candidates = []
+    def _merge_adjacent_company_keywords(self, text_data: List[str], legal_keywords: List[str]) -> List[str]:
+        """인접한 회사명 관련 키워드들을 병합하는 함수"""
+        if not text_data:
+            return text_data
         
-        # 각 텍스트에서 이름 패턴 찾기
+        merged_texts = []
+        i = 0
+        
+        while i < len(text_data):
+            current_text = text_data[i].strip()
+            
+            # 현재 텍스트가 법인 키워드인지 확인
+            is_legal_keyword = any(keyword in current_text for keyword in legal_keywords)
+            
+            if is_legal_keyword and i + 1 < len(text_data):
+                next_text = text_data[i + 1].strip()
+                
+                # 다음 텍스트가 회사명일 가능성이 높은지 확인
+                if self._is_potential_company_name(next_text):
+                    # 병합
+                    merged_text = current_text + next_text
+                    merged_texts.append(merged_text)
+                    logger.info(f"인접 키워드 병합: '{current_text}' + '{next_text}' -> '{merged_text}'")
+                    i += 2  # 두 개를 처리했으므로 2만큼 증가
+                    continue
+            
+            # 현재 텍스트가 잠재적 회사명이고 다음이 법인 키워드인 경우
+            elif (self._is_potential_company_name(current_text) and 
+                  i + 1 < len(text_data)):
+                next_text = text_data[i + 1].strip()
+                is_next_legal = any(keyword in next_text for keyword in legal_keywords)
+                
+                if is_next_legal:
+                    # 병합 (회사명 + 법인형태)
+                    merged_text = current_text + next_text
+                    merged_texts.append(merged_text)
+                    logger.info(f"인접 키워드 병합: '{current_text}' + '{next_text}' -> '{merged_text}'")
+                    i += 2
+                    continue
+            
+            # 병합하지 않는 경우 그대로 추가
+            merged_texts.append(current_text)
+            i += 1
+        
+        # 원본 텍스트도 포함 (병합된 것과 원본 모두 후보로 고려)
+        all_texts = list(text_data) + merged_texts
+        return all_texts
+    
+    def _is_potential_company_name(self, text: str) -> bool:
+        """텍스트가 잠재적 회사명인지 판단"""
+        if not text or len(text) < 2:
+            return False
+        
+        # 명백히 회사명이 아닌 패턴들
+        exclude_patterns = [
+            r'^[가-힣]{2,4}$',  # 2-4글자 순수 한글 이름 (성씨로 시작)
+            r'.*@.*',  # 이메일
+            r'.*[0-9]{2,3}[-\s]?[0-9]{3,4}[-\s]?[0-9]{4}.*',  # 전화번호
+            r'^[0-9\-\s\(\)]+$',  # 숫자와 기호만
+            r'^[A-Za-z]{1,3}$',  # 짧은 영문 (KIA, TO 등은 제외)
+        ]
+        
+        # 제외 패턴에 해당하면 회사명이 아님
+        if any(re.match(pattern, text) for pattern in exclude_patterns):
+            return False
+        
+        # 직책 키워드가 포함되면 회사명이 아님
+        if any(keyword in text for keyword in self.position_keywords):
+            return False
+        
+        # 성씨로 시작하는 2-4글자 한글이면 이름일 가능성이 높음
+        if (2 <= len(text) <= 4 and 
+            re.match(r'^[가-힣]+$', text) and 
+            text[0] in self.common_surnames):
+            return False
+        
+        return True
+    
+    def _extract_korean_name(self, text_data: List[str]) -> str:
+        """한국어 이름 추출 (회사명/직책 제외 후 이름 찾기)"""
+        logger.info(f"이름 추출 시작 - 입력 텍스트: {text_data}")
+        
+        # 1. 회사명과 직책이 포함된 텍스트 제외
+        filtered_texts = []
+        excluded_texts = []
+        
         for text in text_data:
             clean_text = text.strip()
+            if not clean_text:  # 빈 텍스트 제외
+                continue
+                
+            # 회사명 키워드가 포함된 텍스트 제외
+            has_company_keyword = any(keyword in clean_text for keyword in self.company_keywords)
             
-            # 1. 직책과 함께 있는 이름 패턴 (예: "대표우 태 경", "이사 김철수")
-            position_name_patterns = [
-                r'(?:대표|이사|부장|과장|차장|대리|주임|사원|팀장|실장|CEO|CTO|CFO|Manager|Director)\s*([가-힣]{1,2}\s*[가-힣]{1,3})',
-                r'([가-힣]{1,2}\s*[가-힣]{1,3})\s*(?:대표|이사|부장|과장|차장|대리|주임|사원|팀장|실장|CEO|CTO|CFO)',
-            ]
+            # 직책 키워드가 포함된 텍스트 제외 (단, 공백이 있는 경우 더 정확히 확인)
+            has_position_keyword = False
+            for keyword in self.position_keywords:
+                if keyword in clean_text:
+                    # 공백이 있는 경우 (예: "이 사") 완전 일치하는지 확인
+                    if ' ' in clean_text:
+                        # 공백 제거한 버전으로도 확인
+                        clean_no_space = re.sub(r'\s+', '', clean_text)
+                        if clean_no_space == keyword:
+                            has_position_keyword = True
+                            break
+                    else:
+                        # 완전 일치하는 경우에만 직책으로 간주
+                        if clean_text == keyword:
+                            has_position_keyword = True
+                            break
             
-            for pattern in position_name_patterns:
-                matches = re.findall(pattern, clean_text)
-                for match in matches:
-                    # 공백 제거하고 이름만 추출
-                    name_candidate = re.sub(r'\s+', '', match).strip()
-                    if 2 <= len(name_candidate) <= 4 and name_candidate[0] in self.common_surnames:
-                        if not any(keyword in name_candidate for keyword in self.company_keywords):
-                            name_candidates.append(name_candidate)
-                            logger.info(f"직책-이름 패턴에서 발견: '{clean_text}' -> '{name_candidate}'")
+            # 이메일, 전화번호, 주소 등이 포함된 텍스트 제외
+            has_email = '@' in clean_text
+            has_phone = re.search(r'\d{2,3}[-\s]?\d{3,4}[-\s]?\d{4}', clean_text)
+            has_address = any(keyword in clean_text for keyword in self.address_keywords)
+            has_postal = re.search(r'\d{5}', clean_text)
             
-            # 2. 괄호 앞의 이름 패턴 (예: "우태경 (우남철)")
-            bracket_name_pattern = r'([가-힣]{2,4})\s*\([^)]+\)'
-            bracket_matches = re.findall(bracket_name_pattern, clean_text)
-            for match in bracket_matches:
-                name_candidate = re.sub(r'\s+', '', match).strip()
-                if name_candidate[0] in self.common_surnames:
-                    if not any(keyword in name_candidate for keyword in self.company_keywords):
-                        name_candidates.append(name_candidate)
-                        logger.info(f"괄호 패턴에서 발견: '{clean_text}' -> '{name_candidate}'")
+            # 기타 제외할 패턴들
+            has_tel_fax_mobile = any(label in clean_text.upper() for label in ['TEL', 'FAX', 'MOBILE', 'E-MAIL'])
             
-            # 3. 공백이 있는 한국어 이름 패턴 (예: "우 태 경")
-            spaced_name_pattern = r'([가-힣]\s+[가-힣](?:\s+[가-힣])?)'
-            spaced_matches = re.findall(spaced_name_pattern, clean_text)
-            for match in spaced_matches:
-                name_candidate = re.sub(r'\s+', '', match).strip()
+            if has_company_keyword or has_email or has_phone or has_address or has_postal or has_tel_fax_mobile:
+                excluded_texts.append(clean_text)
+                logger.info(f"제외된 텍스트 (회사/연락처/주소): '{clean_text}'")
+            elif has_position_keyword:
+                # 직책이 포함된 텍스트는 이름+직책 조합인지 확인
+                name_with_position = self._extract_name_from_position_text(clean_text)
+                if name_with_position:
+                    logger.info(f"직책 텍스트에서 이름 추출: '{clean_text}' -> '{name_with_position}'")
+                    return name_with_position
+                else:
+                    excluded_texts.append(clean_text)
+                    logger.info(f"제외된 텍스트 (직책만): '{clean_text}'")
+            else:
+                filtered_texts.append(clean_text)
+                logger.info(f"이름 후보 텍스트: '{clean_text}'")
+        
+        logger.info(f"필터링 후 남은 텍스트: {filtered_texts}")
+        logger.info(f"제외된 텍스트: {excluded_texts}")
+        
+        # 2. 남은 텍스트에서 이름 찾기
+        name_candidates = []
+        
+        for text in filtered_texts:
+            clean_text = text.strip()
+            
+            # 2-1. 순수 한글 이름 (2-4글자)
+            if re.match(r'^[가-힣]+$', clean_text) and 2 <= len(clean_text) <= 4:
+                if clean_text[0] in self.common_surnames:
+                    name_candidates.append(clean_text)
+                    logger.info(f"순수 한글 이름 발견: '{clean_text}'")
+            
+            # 2-2. 공백이 있는 한글 이름 (예: "김   정   훈", "성 인 근") - 개선된 패턴
+            elif re.match(r'^[가-힣]\s+[가-힣](\s+[가-힣])*$', clean_text):
+                name_candidate = re.sub(r'\s+', '', clean_text)
                 if 2 <= len(name_candidate) <= 4 and name_candidate[0] in self.common_surnames:
-                    # 직책이나 회사명이 포함되지 않은 경우만
-                    if not any(keyword in clean_text for keyword in self.position_keywords + self.company_keywords):
-                        name_candidates.append(name_candidate)
-                        logger.info(f"공백 이름 패턴에서 발견: '{clean_text}' -> '{name_candidate}'")
-        
-        # 4. 기본 한국어 이름 패턴 (순수 한글 2-4글자)
-        if not name_candidates:
-            korean_texts = [text for text in text_data if re.search(r'[가-힣]', text)]
-            for text in korean_texts:
-                clean_text = text.strip()
-                # 순수 한글이고 2-4글자인 경우
-                if 2 <= len(clean_text) <= 4 and clean_text.replace(' ', '').isalpha() and all(ord('가') <= ord(char) <= ord('힣') for char in clean_text if char != ' '):
-                    # 회사명 키워드가 포함되지 않은 경우에만 이름 후보로 추가
-                    if not any(keyword in clean_text for keyword in self.company_keywords):
-                        name_candidates.append(clean_text)
-        
-        # 5. 성씨로 시작하는 패턴 확인
-        if not name_candidates:
-            korean_texts = [text for text in text_data if re.search(r'[가-힣]', text)]
-            for text in korean_texts:
-                clean_text = text.strip()
-                # 성씨로 시작하는 2-4글자 텍스트 찾기
-                if len(clean_text) >= 2 and clean_text[0] in self.common_surnames:
-                    if len(clean_text) <= 4 and all(ord('가') <= ord(char) <= ord('힣') for char in clean_text):
-                        if not any(keyword in clean_text for keyword in self.company_keywords):
-                            name_candidates.append(clean_text)
-        
-        # 이름 후보 정리 및 선택
-        if name_candidates:
-            # 중복 제거
-            unique_candidates = list(set(name_candidates))
+                    name_candidates.append(name_candidate)
+                    logger.info(f"공백 포함 이름 발견: '{clean_text}' -> '{name_candidate}'")
             
-            # 가장 적절한 이름 선택 (길이와 패턴을 고려)
+            # 2-3. 괄호가 있는 경우 괄호 앞 이름 확인
+            elif '(' in clean_text:
+                bracket_match = re.search(r'^([가-힣\s]{2,})\s*\(', clean_text)
+                if bracket_match:
+                    name_candidate = re.sub(r'\s+', '', bracket_match.group(1))
+                    if 2 <= len(name_candidate) <= 4 and name_candidate[0] in self.common_surnames:
+                        name_candidates.append(name_candidate)
+                        logger.info(f"괄호 앞 이름 발견: '{clean_text}' -> '{name_candidate}'")
+        
+        # 3. 이름 후보 선택
+        if name_candidates:
+            unique_candidates = list(set(name_candidates))
+            logger.info(f"발견된 이름 후보들: {unique_candidates}")
+            
+            # 3글자 이름 우선, 그 다음 2글자
             best_name = None
             for candidate in unique_candidates:
-                # 3글자 이름을 우선 선택
                 if len(candidate) == 3:
                     best_name = candidate
                     break
             
-            # 3글자가 없으면 첫 번째 후보 사용
+            if not best_name:
+                for candidate in unique_candidates:
+                    if len(candidate) == 2:
+                        best_name = candidate
+                        break
+            
             if not best_name:
                 best_name = unique_candidates[0]
             
-            logger.info(f"이름 후보들: {unique_candidates}, 선택된 이름: {best_name}")
+            logger.info(f"최종 선택된 이름: {best_name}")
             return best_name
-        else:
-            logger.warning("이름을 찾을 수 없습니다. OCR 텍스트를 확인해주세요.")
-            logger.warning(f"분석된 텍스트: {text_data}")
-            return None
+        
+        # 4. 이름을 못 찾은 경우 마지막 시도 - 더 관대한 조건
+        logger.warning("필터링된 텍스트에서 이름을 찾지 못했습니다. 전체 텍스트 재검토...")
+        for text in text_data:
+            clean_text = text.strip()
+            
+            # 공백이 포함된 한글 패턴도 포함하여 재검토
+            if re.match(r'^[가-힣\s]+$', clean_text):
+                # 공백 제거하고 확인
+                name_candidate = re.sub(r'\s+', '', clean_text)
+                if (2 <= len(name_candidate) <= 4 and 
+                    name_candidate[0] in self.common_surnames):
+                    
+                    # 명백한 비이름 패턴 제외
+                    exclude_keywords = ['주식회사', '㈜', '(주)', '대표', '이사', '부장', '과장', 
+                                      '산업', '기업', '그룹', '회사', '센터']
+                    if not any(exclude in name_candidate for exclude in exclude_keywords):
+                        logger.info(f"마지막 시도로 발견된 이름: '{clean_text}' -> '{name_candidate}'")
+                        return name_candidate
+        
+        logger.warning("이름을 찾을 수 없습니다.")
+        return None
+    
+    def _extract_name_from_position_text(self, text: str) -> str:
+        """직책이 포함된 텍스트에서 이름 추출"""
+        # "대표이사 성인근" 또는 "성인근 대표이사" 패턴
+        
+        # 직책 뒤에 이름
+        position_name_match = re.search(r'(?:대표이사|대표|이사|부장|과장|차장|대리|주임|사원|팀장|실장|CEO|CTO|CFO|Manager|Director)\s+([가-힣]{2,4})', text)
+        if position_name_match:
+            name_candidate = position_name_match.group(1)
+            if name_candidate[0] in self.common_surnames:
+                return name_candidate
+        
+        # 이름 뒤에 직책
+        name_position_match = re.search(r'([가-힣]{2,4})\s+(?:대표이사|대표|이사|부장|과장|차장|대리|주임|사원|팀장|실장|CEO|CTO|CFO)', text)
+        if name_position_match:
+            name_candidate = name_position_match.group(1)
+            if name_candidate[0] in self.common_surnames:
+                return name_candidate
+        
+        # 공백 없이 붙어있는 경우 (예: "대표성인근")
+        attached_match = re.search(r'(?:대표이사|대표|이사)([가-힣]{2,4})', text)
+        if attached_match:
+            name_candidate = attached_match.group(1)
+            if name_candidate[0] in self.common_surnames:
+                return name_candidate
+        
+        return None
     
     def _extract_position(self, text_data: List[str]) -> str:
         """직책 추출"""

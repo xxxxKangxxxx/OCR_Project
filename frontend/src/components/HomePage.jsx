@@ -1,11 +1,21 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import { ko } from 'date-fns/locale';
+import "react-datepicker/dist/react-datepicker.css";
 import CardGroup from './CardGroup';
 import { useBusinessCards } from '../utils/useLocalStorage.js';
 import './HomePage.css';
 
 const HomePage = () => {
-  const [groupBy, setGroupBy] = useState('company');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const initialFilter = searchParams.get('filter') || '';
+  
+  const [groupBy, setGroupBy] = useState(initialFilter);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
   const [customColors, setCustomColors] = useState(() => {
     // localStorage에서 저장된 색상 데이터 불러오기
     const savedColors = localStorage.getItem('cardletCustomColors');
@@ -38,6 +48,7 @@ const HomePage = () => {
 
   // 회사별 색상 매핑
   const companyColors = useMemo(() => {
+    const defaultColor = '#d3d3d3'; // 연한 회색을 기본값으로 설정
     const baseColors = [
       '#4A90E2', // 파란색
       '#D35400', // 주황색
@@ -55,19 +66,23 @@ const HomePage = () => {
     let colorIndex = 0;
 
     return (company) => {
-      if (!company) return baseColors[0];
+      if (!company) return defaultColor;
       // 사용자가 지정한 색상이 있으면 그 색상을 사용
       if (customColors[company]) {
         return customColors[company];
       }
-      // 없으면 기본 색상 할당
-      if (!colorMap.has(company)) {
-        colorMap.set(company, baseColors[colorIndex % baseColors.length]);
-        colorIndex++;
+      // 회사별 그룹화일 때만 다양한 색상 사용
+      if (groupBy === 'company') {
+        if (!colorMap.has(company)) {
+          colorMap.set(company, baseColors[colorIndex % baseColors.length]);
+          colorIndex++;
+        }
+        return colorMap.get(company);
       }
-      return colorMap.get(company);
+      // 다른 필터 옵션일 때는 기본 색상 사용
+      return defaultColor;
     };
-  }, [customColors]);
+  }, [customColors, groupBy]);
 
   const handleColorChange = (company, color) => {
     setCustomColors(prev => ({
@@ -90,17 +105,25 @@ const HomePage = () => {
   }, []);
 
   const options = [
-    { value: 'company', label: '회사별' },
-    { value: 'date', label: '날짜별' },
-    { value: 'department', label: '부서별' }
+    { value: '', label: '선택' },
+    { value: 'company', label: '회사' },
+    { value: 'date', label: '등록 날짜' }
   ];
 
   const handleOptionClick = (value) => {
     setGroupBy(value);
     setIsDropdownOpen(false);
+    // URL 파라미터 업데이트
+    const newSearchParams = new URLSearchParams(location.search);
+    if (value) {
+      newSearchParams.set('filter', value);
+    } else {
+      newSearchParams.delete('filter');
+    }
+    navigate(`?${newSearchParams.toString()}`, { replace: true });
   };
 
-  // 로컬스토리지의 실제 데이터를 회사별로 그룹화
+  // 로컬스토리지의 실제 데이터를 그룹화
   const cardGroups = useMemo(() => {
     if (!cards || cards.length === 0) {
       return [{
@@ -110,48 +133,98 @@ const HomePage = () => {
       }];
     }
 
-    // 회사별로 그룹화
-    const groupedByCompany = cards.reduce((acc, card) => {
-      const companyName = card.company_name || '회사명 없음';
-      if (!acc[companyName]) {
-        acc[companyName] = [];
+    if (groupBy === 'date' && selectedDate) {
+      // 선택된 날짜의 명함만 필터링
+      const filteredCards = cards.filter(card => {
+        if (!card.created_at) return false;
+        const cardDate = new Date(card.created_at);
+        const filterDate = new Date(selectedDate);
+        return cardDate.toLocaleDateString() === filterDate.toLocaleDateString();
+      });
+
+      if (filteredCards.length === 0) {
+        return [{
+          id: 'empty',
+          title: '해당 날짜에 등록된 명함이 없습니다',
+          cards: []
+        }];
       }
-      acc[companyName].push(card);
-      return acc;
-    }, {});
 
-    console.log('Grouped Cards:', groupedByCompany);
+      return [{
+        id: 'date',
+        title: `${new Date(selectedDate).toLocaleDateString()} 등록`,
+        cards: filteredCards
+      }];
+    }
 
-    // 배열 형태로 변환
-    return Object.entries(groupedByCompany).map(([companyName, companyCards], index) => ({
-      id: index + 1,
-      title: companyName,
-      cards: companyCards
-    }));
-  }, [cards, groupBy]);
+    // 회사별로 그룹화
+    if (groupBy === 'company') {
+      const groupedByCompany = cards.reduce((acc, card) => {
+        const companyName = card.company_name || '회사명 없음';
+        if (!acc[companyName]) {
+          acc[companyName] = [];
+        }
+        acc[companyName].push(card);
+        return acc;
+      }, {});
+
+      return Object.entries(groupedByCompany).map(([companyName, companyCards], index) => ({
+        id: index + 1,
+        title: companyName,
+        cards: companyCards
+      }));
+    }
+
+    // 필터가 선택되지 않은 경우 모든 명함 표시
+    return [{
+      id: 'all',
+      title: '전체 명함',
+      cards: cards
+    }];
+  }, [cards, groupBy, selectedDate]);
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
 
   return (
     <div className="homepage">
       <div className="filter-section">
-        <div className="custom-dropdown" ref={dropdownRef}>
-          <button 
-            className="dropdown-button"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          >
-            {options.find(opt => opt.value === groupBy)?.label || '선택'}
-            <span className="dropdown-arrow"></span>
-          </button>
-          {isDropdownOpen && (
-            <div className="dropdown-menu">
-              {options.map((option) => (
-                <div
-                  key={option.value}
-                  className={`dropdown-item ${option.value === groupBy ? 'active' : ''}`}
-                  onClick={() => handleOptionClick(option.value)}
-                >
-                  {option.label}
-                </div>
-              ))}
+        <div className="filter-container">
+          <div className="custom-dropdown" ref={dropdownRef}>
+            <button 
+              className="dropdown-button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              {options.find(opt => opt.value === groupBy)?.label || '선택'}
+              <span className="dropdown-arrow"></span>
+            </button>
+            {isDropdownOpen && (
+              <div className="dropdown-menu">
+                {options.map((option) => (
+                  <div
+                    key={option.value}
+                    className={`dropdown-item ${option.value === groupBy ? 'active' : ''}`}
+                    onClick={() => handleOptionClick(option.value)}
+                  >
+                    {option.label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          {groupBy === 'date' && (
+            <div className="date-picker-container">
+              <DatePicker
+                selected={selectedDate}
+                onChange={handleDateChange}
+                dateFormat="yyyy년 MM월 dd일"
+                placeholderText="날짜 선택"
+                className="date-picker"
+                showPopperArrow={false}
+                locale={ko}
+                maxDate={new Date()}
+              />
             </div>
           )}
         </div>

@@ -5,6 +5,7 @@ import './App.css'
 import Layout from './components/Layout'
 import HomePage from './components/HomePage';
 import CompanyCards from './components/CompanyCards';
+import CardList from './components/CardList';
 import MyPage from './components/MyPage';
 import LocalStorageDemo from './components/LocalStorageDemo';
 
@@ -71,6 +72,14 @@ function AppContent() {
         <Route 
           path="/company/:companyName" 
           element={<CompanyCards key={`company-${location.pathname}-${Date.now()}`} />} 
+        />
+        <Route 
+          path="/cards/:type" 
+          element={<CardList key={`cards-${location.pathname}-${Date.now()}`} />} 
+        />
+        <Route 
+          path="/cards/date/:date" 
+          element={<CardList key={`cards-date-${location.pathname}-${Date.now()}`} />} 
         />
         <Route 
           path="/mypage" 

@@ -1,145 +1,107 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useUserInfo, useCardStats } from '../utils/useLocalStorage';
 import './MyPage.css';
 
 const MyPage = () => {
-  const [user, setUser] = useState({
-    name: '김철수',
-    email: 'chulsoo@example.com',
-    avatar: null,
-    joinDate: '2024.01.15',
-    avatarColor: '#4A90E2'
+  const navigate = useNavigate();
+  const { userInfo, saveUserInfo, loading: userLoading } = useUserInfo();
+  const { stats, refreshStats } = useCardStats();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    email: ''
   });
-
-  const [stats, setStats] = useState({
-    totalCards: 0,
-    totalCompanies: 0,
-    favoriteCards: 0,
-    recentScans: 0
-  });
-
-  const [settings, setSettings] = useState({
-    notifications: true,
-    autoBackup: true,
-    darkMode: false,
-    language: 'ko'
-  });
-
   const [activeTab, setActiveTab] = useState('profile');
 
-  // 컴포넌트 마운트 시 상태 초기화
   useEffect(() => {
-    // 자체 스크롤 초기화 (독립적 컨테이너이므로 간단함)
-    const resetScroll = () => {
-      const mypage = document.querySelector('.mypage');
-      if (mypage) {
-        mypage.scrollTop = 0;
-      }
-      console.log('MyPage 마운트 - 스크롤 초기화');
-    };
+    if (!userLoading && userInfo && (!userInfo.name || !userInfo.email)) {
+      setIsEditing(true);
+    }
+    if (userInfo) {
+      setEditForm({
+        name: userInfo.name || '',
+        email: userInfo.email || ''
+      });
+    }
+  }, [userInfo, userLoading]);
 
-    resetScroll();
-    setTimeout(resetScroll, 0);
-
-    // 페이지 진입 시마다 초기 상태로 리셋
-    setActiveTab('profile');
-    
-    // 사용자 정보 초기화 (실제로는 API에서 가져올 것)
-    setUser({
-      name: '김철수',
-      email: 'chulsoo@example.com',
-      avatar: null,
-      joinDate: '2024.01.15',
-      avatarColor: '#4A90E2'
-    });
-
-    // 설정 초기화 (실제로는 API에서 가져올 것)
-    setSettings({
-      notifications: true,
-      autoBackup: true,
-      darkMode: false,
-      language: 'ko'
-    });
-
-    // 통계 데이터 로드 (실제로는 API에서 데이터를 가져올 것)
-    setStats({
-      totalCards: 47,
-      totalCompanies: 12,
-      favoriteCards: 8,
-      recentScans: 3
-    });
-  }, []); // 빈 배열로 마운트 시에만 실행
-
-  const handleSettingChange = (key, value) => {
-    setSettings(prev => ({
-      ...prev,
-      [key]: value
-    }));
-    // 실제로는 API로 설정 저장
-    console.log(`설정 변경: ${key} = ${value}`);
-  };
-
-  const handleProfileUpdate = () => {
-    // 프로필 업데이트 로직
-    alert('프로필이 업데이트되었습니다.');
-  };
-
-  const handleExportData = () => {
-    // 데이터 내보내기 로직
-    alert('데이터 내보내기 기능을 준비 중입니다.');
-  };
-
-  const handleDeleteAccount = () => {
-    if (confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-      alert('계정 삭제 기능을 준비 중입니다.');
+  const handleEditClick = () => {
+    if (userInfo) {
+      setEditForm({
+        name: userInfo.name || '',
+        email: userInfo.email || ''
+      });
+      setIsEditing(true);
     }
   };
 
-  // 아바타 색상 변경 함수
-  const handleAvatarColorChange = () => {
-    const colors = [
-      '#4A90E2', // 파란색
-      '#67B26F', // 초록색  
-      '#E74C3C', // 빨간색
-      '#F39C12', // 주황색
-      '#9B59B6', // 보라색
-      '#1ABC9C', // 청록색
-      '#34495E', // 회색
-      '#E67E22'  // 진한 주황색
-    ];
-    
-    const currentIndex = colors.indexOf(user.avatarColor);
-    const nextIndex = (currentIndex + 1) % colors.length;
-    const newColor = colors[nextIndex];
-    
-    setUser(prev => ({ ...prev, avatarColor: newColor }));
+  const handleSave = async (e) => {
+    e.preventDefault();
+    if (saveUserInfo({
+      ...userInfo,
+      ...editForm,
+      updatedAt: new Date().toISOString()
+    })) {
+      setIsEditing(false);
+      refreshStats();
+    }
   };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleTotalCardsClick = () => {
+    navigate('/cards/all');
+  };
+
+  const handleTotalCompaniesClick = () => {
+    navigate('/?filter=company');
+  };
+
+  if (userLoading) {
+    return (
+      <div className="mypage">
+        <div className="loading">로딩 중...</div>
+      </div>
+    );
+  }
+
+  if (!userInfo) {
+    return (
+      <div className="mypage">
+        <div className="error">사용자 정보를 불러올 수 없습니다.</div>
+      </div>
+    );
+  }
 
   return (
     <div className="mypage">
       <div className="mypage-header">
         <div className="user-profile">
           <div className="avatar-container">
-            {user.avatar ? (
-              <img src={user.avatar} alt="프로필" className="user-avatar" />
-            ) : (
-              <div className="user-avatar default-avatar" style={{ backgroundColor: user.avatarColor }}>
-                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-              </div>
-            )}
+            <div className="user-avatar default-avatar">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
           </div>
           <div className="user-info">
-            <h2 className="user-name">{user.name}</h2>
-            <p className="user-email">{user.email}</p>
-            <p className="join-date">가입일: {user.joinDate}</p>
+            <h1 className="user-name">{userInfo.name || '이름 없음'}</h1>
+            <p className="user-email">{userInfo.email || '이메일 없음'}</p>
+            <p className="join-date">가입일: {new Date(userInfo.createdAt || Date.now()).toLocaleDateString()}</p>
           </div>
         </div>
       </div>
 
       <div className="stats-grid">
-        <div className="stat-card">
+        <div className="stat-card clickable" onClick={handleTotalCardsClick}>
           <div className="stat-icon total-cards">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
@@ -148,12 +110,12 @@ const MyPage = () => {
             </svg>
           </div>
           <div className="stat-content">
-            <h3 className="stat-number">{stats.totalCards}</h3>
+            <h3 className="stat-number">{stats.totalCards || 0}</h3>
             <p className="stat-label">총 명함 수</p>
           </div>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card clickable" onClick={handleTotalCompaniesClick}>
           <div className="stat-icon total-companies">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -161,7 +123,7 @@ const MyPage = () => {
             </svg>
           </div>
           <div className="stat-content">
-            <h3 className="stat-number">{stats.totalCompanies}</h3>
+            <h3 className="stat-number">{stats.totalCompanies || 0}</h3>
             <p className="stat-label">등록 회사 수</p>
           </div>
         </div>
@@ -173,7 +135,7 @@ const MyPage = () => {
             </svg>
           </div>
           <div className="stat-content">
-            <h3 className="stat-number">{stats.favoriteCards}</h3>
+            <h3 className="stat-number">{stats.favoriteCards || 0}</h3>
             <p className="stat-label">즐겨찾기</p>
           </div>
         </div>
@@ -181,15 +143,12 @@ const MyPage = () => {
         <div className="stat-card">
           <div className="stat-icon recent-scans">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 12l2 2 4-4"></path>
-              <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"></path>
-              <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"></path>
-              <path d="M12 3c0 1-1 3-3 3s-3-2-3-3 1-3 3-3 3 2 3 3"></path>
-              <path d="M12 21c0-1 1-3 3-3s3 2 3 3-1 3-3 3-3-2-3-3"></path>
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
             </svg>
           </div>
           <div className="stat-content">
-            <h3 className="stat-number">{stats.recentScans}</h3>
+            <h3 className="stat-number">{stats.recentScans?.length || 0}</h3>
             <p className="stat-label">최근 스캔</p>
           </div>
         </div>
@@ -209,178 +168,97 @@ const MyPage = () => {
           설정
         </button>
         <button 
-          className={`tab-button ${activeTab === 'data' ? 'active' : ''}`}
-          onClick={() => setActiveTab('data')}
+          className={`tab-button ${activeTab === 'activity' ? 'active' : ''}`}
+          onClick={() => setActiveTab('activity')}
         >
-          데이터 관리
+          활동
         </button>
       </div>
 
       <div className="tab-content">
         {activeTab === 'profile' && (
-          <div className="profile-section">
-            <div className="section-card">
-              <h3 className="section-title">개인 정보</h3>
-              <div className="form-group">
-                <label htmlFor="userName">이름</label>
-                <input 
-                  type="text" 
-                  id="userName" 
-                  value={user.name} 
-                  onChange={(e) => setUser(prev => ({ ...prev, name: e.target.value }))}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="userEmail">이메일</label>
-                <input 
-                  type="email" 
-                  id="userEmail" 
-                  value={user.email} 
-                  onChange={(e) => setUser(prev => ({ ...prev, email: e.target.value }))}
-                />
-              </div>
-              <button className="update-btn" onClick={handleProfileUpdate}>
-                프로필 업데이트
+          <div className="section-card">
+            <h2 className="section-title">프로필 정보</h2>
+            {isEditing ? (
+              <form onSubmit={handleSave}>
+                <div className="form-group">
+                  <label htmlFor="name">이름</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={editForm.name}
+                    onChange={handleChange}
+                    placeholder="이름을 입력하세요"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="email">이메일</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={editForm.email}
+                    onChange={handleChange}
+                    placeholder="이메일을 입력하세요"
+                    required
+                  />
+                </div>
+                <button type="submit" className="update-btn">저장</button>
+              </form>
+            ) : (
+              <button className="update-btn" onClick={handleEditClick}>
+                프로필 수정
               </button>
-            </div>
-
-            <div className="section-card">
-              <h3 className="section-title">최근 활동</h3>
-              <div className="activity-list">
-                <div className="activity-item">
-                  <div className="activity-icon">📋</div>
-                  <div className="activity-content">
-                    <p className="activity-text">삼성전자 김철수님 명함을 추가했습니다</p>
-                    <p className="activity-time">2시간 전</p>
-                  </div>
-                </div>
-                <div className="activity-item">
-                  <div className="activity-icon">⭐</div>
-                  <div className="activity-content">
-                    <p className="activity-text">LG전자 이영희님을 즐겨찾기에 추가했습니다</p>
-                    <p className="activity-time">1일 전</p>
-                  </div>
-                </div>
-                <div className="activity-item">
-                  <div className="activity-icon">🏢</div>
-                  <div className="activity-content">
-                    <p className="activity-text">네이버 회사 그룹을 생성했습니다</p>
-                    <p className="activity-time">3일 전</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         )}
 
         {activeTab === 'settings' && (
-          <div className="settings-section">
-            <div className="section-card">
-              <h3 className="section-title">알림 설정</h3>
-              <div className="setting-item">
-                <div className="setting-info">
-                  <h4>푸시 알림</h4>
-                  <p>새로운 명함 추가 시 알림을 받습니다</p>
-                </div>
-                <label className="toggle-switch">
-                  <input 
-                    type="checkbox" 
-                    checked={settings.notifications}
-                    onChange={(e) => handleSettingChange('notifications', e.target.checked)}
-                  />
-                  <span className="toggle-slider"></span>
-                </label>
+          <div className="section-card">
+            <h2 className="section-title">설정</h2>
+            <div className="setting-item">
+              <div className="setting-info">
+                <h4>알림 설정</h4>
+                <p>새로운 명함이 추가되면 알림을 받습니다.</p>
               </div>
-              <div className="setting-item">
-                <div className="setting-info">
-                  <h4>자동 백업</h4>
-                  <p>명함 데이터를 자동으로 백업합니다</p>
-                </div>
-                <label className="toggle-switch">
-                  <input 
-                    type="checkbox" 
-                    checked={settings.autoBackup}
-                    onChange={(e) => handleSettingChange('autoBackup', e.target.checked)}
-                  />
-                  <span className="toggle-slider"></span>
-                </label>
-              </div>
+              <label className="toggle-switch">
+                <input type="checkbox" />
+                <span className="toggle-slider"></span>
+              </label>
             </div>
-
-            <div className="section-card">
-              <h3 className="section-title">앱 설정</h3>
-              <div className="setting-item">
-                <div className="setting-info">
-                  <h4>다크 모드</h4>
-                  <p>어두운 테마를 사용합니다</p>
-                </div>
-                <label className="toggle-switch">
-                  <input 
-                    type="checkbox" 
-                    checked={settings.darkMode}
-                    onChange={(e) => handleSettingChange('darkMode', e.target.checked)}
-                  />
-                  <span className="toggle-slider"></span>
-                </label>
+            <div className="setting-item">
+              <div className="setting-info">
+                <h4>자동 백업</h4>
+                <p>명함 데이터를 자동으로 백업합니다.</p>
               </div>
-              <div className="setting-item">
-                <div className="setting-info">
-                  <h4>언어</h4>
-                  <p>앱에서 사용할 언어를 선택합니다</p>
-                </div>
-                <select 
-                  value={settings.language}
-                  onChange={(e) => handleSettingChange('language', e.target.value)}
-                  className="language-select"
-                >
-                  <option value="ko">한국어</option>
-                  <option value="en">English</option>
-                  <option value="ja">日本語</option>
-                </select>
-              </div>
+              <label className="toggle-switch">
+                <input type="checkbox" />
+                <span className="toggle-slider"></span>
+              </label>
             </div>
           </div>
         )}
 
-        {activeTab === 'data' && (
-          <div className="data-section">
-            <div className="section-card">
-              <h3 className="section-title">데이터 내보내기</h3>
-              <p className="section-description">
-                저장된 명함 데이터를 다양한 형식으로 내보낼 수 있습니다.
-              </p>
-              <div className="export-options">
-                <button className="export-btn csv" onClick={handleExportData}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14,2 14,8 20,8"></polyline>
-                  </svg>
-                  CSV로 내보내기
-                </button>
-                <button className="export-btn json" onClick={handleExportData}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14,2 14,8 20,8"></polyline>
-                  </svg>
-                  JSON으로 내보내기
-                </button>
-              </div>
-            </div>
-
-            <div className="section-card danger-zone">
-              <h3 className="section-title danger">위험 구역</h3>
-              <p className="section-description">
-                아래 작업들은 되돌릴 수 없습니다. 신중하게 진행해주세요.
-              </p>
-              <div className="danger-actions">
-                <button className="danger-btn" onClick={handleDeleteAccount}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3,6 5,6 21,6"></polyline>
-                    <path d="m19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"></path>
-                  </svg>
-                  계정 삭제
-                </button>
-              </div>
+        {activeTab === 'activity' && (
+          <div className="section-card">
+            <h2 className="section-title">최근 활동</h2>
+            <div className="activity-list">
+              {stats.recentScans?.map((scan, index) => (
+                <div key={index} className="activity-item">
+                  <div className="activity-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                      <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                  </div>
+                  <div className="activity-content">
+                    <p className="activity-text">새로운 명함을 스캔했습니다.</p>
+                    <p className="activity-time">{new Date(scan.createdAt).toLocaleString()}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}

@@ -232,14 +232,14 @@ const LocalStorageDemo = () => {
                   border: '1px solid #ddd', 
                   padding: '15px', 
                   borderRadius: '8px',
-                  backgroundColor: card.is_favorite ? '#fff3cd' : 'white'
+                  backgroundColor: card.isFavorite ? '#fff3cd' : 'white'
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                   <div>
                     <h4 style={{ margin: '0 0 5px 0' }}>
                       {card.name}
-                      {card.is_favorite && <span style={{ color: '#ffc107' }}> ⭐</span>}
+                      {card.isFavorite && <span style={{ color: '#ffc107' }}> ⭐</span>}
                     </h4>
                     <p style={{ margin: '0 0 5px 0', color: '#666' }}>{card.position}</p>
                     <p style={{ margin: '0 0 5px 0', color: '#666' }}>{card.company?.name}</p>
@@ -250,7 +250,7 @@ const LocalStorageDemo = () => {
                     <button 
                       onClick={() => handleToggleFavorite(card.id)}
                       style={{ 
-                        backgroundColor: card.is_favorite ? '#ffc107' : '#6c757d',
+                        backgroundColor: card.isFavorite ? '#ffc107' : '#6c757d',
                         color: 'white', 
                         padding: '5px 10px', 
                         border: 'none', 
@@ -260,7 +260,7 @@ const LocalStorageDemo = () => {
                         fontSize: '12px'
                       }}
                     >
-                      {card.is_favorite ? '★' : '☆'}
+                      {card.isFavorite ? '★' : '☆'}
                     </button>
                     <button 
                       onClick={() => handleDeleteCard(card.id)}

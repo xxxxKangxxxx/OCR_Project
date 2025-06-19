@@ -2,7 +2,10 @@
 const STORAGE_KEYS = {
   BUSINESS_CARDS: 'cardlet_business_cards',
   COMPANIES: 'cardlet_companies',
-  SETTINGS: 'cardlet_settings'
+  SETTINGS: 'cardlet_settings',
+  CARDS: 'business_cards',
+  USER_INFO: 'user_info',
+  STORAGE_INFO: 'storage_info'
 };
 
 // 로컬스토리지 유틸리티 클래스
@@ -135,22 +138,61 @@ class BusinessCardStorage {
   }
 
   // 즐겨찾기 토글
-  static toggleFavorite(id) {
-    const cards = this.getAll();
-    const cardIndex = cards.findIndex(card => card.id === id);
-    
-    if (cardIndex !== -1) {
-      cards[cardIndex].is_favorite = !cards[cardIndex].is_favorite;
-      cards[cardIndex].updated_at = new Date().toISOString();
-      return LocalStorageManager.setItem(STORAGE_KEYS.BUSINESS_CARDS, cards);
+  static toggleFavorite(cardId) {
+    try {
+      const cards = this.getAll();
+      const cardIndex = cards.findIndex(card => card.id === cardId);
+      
+      if (cardIndex !== -1) {
+        const updatedCards = [...cards];
+        updatedCards[cardIndex] = {
+          ...updatedCards[cardIndex],
+          isFavorite: !updatedCards[cardIndex].isFavorite,
+          updated_at: new Date().toISOString()
+        };
+        
+        const success = LocalStorageManager.setItem(STORAGE_KEYS.BUSINESS_CARDS, updatedCards);
+        return success;
+      }
+      return false;
+    } catch (error) {
+      console.error('즐겨찾기 토글 실패:', error);
+      return false;
     }
-    return false;
   }
 
   // 즐겨찾기 목록 조회
   static getFavorites() {
+    try {
+      const cards = this.getAll();
+      return cards.filter(card => card.isFavorite);
+    } catch (error) {
+      console.error('즐겨찾기 목록 조회 실패:', error);
+      return [];
+    }
+  }
+
+  static getRecentScans(limit = 5) {
     const cards = this.getAll();
-    return cards.filter(card => card.is_favorite);
+    return cards
+      .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+      .slice(0, limit)
+      .map(card => ({
+        ...card,
+        createdAt: card.created_at
+      }));
+  }
+
+  static getStats() {
+    const cards = this.getAll();
+    const companies = new Set(cards.map(card => card.company_name || '').filter(Boolean)).size;
+    
+    return {
+      totalCards: cards.length,
+      totalCompanies: companies,
+      favoriteCards: cards.filter(card => card.isFavorite).length,
+      recentScans: this.getRecentScans()
+    };
   }
 }
 
@@ -193,6 +235,29 @@ class CompanyStorage {
     return companies.filter(company => 
       company.name.toLowerCase().includes(name.toLowerCase())
     );
+  }
+}
+
+// 사용자 정보 관리 클래스
+class UserStorage {
+  static getInfo() {
+    const defaultInfo = {
+      name: '',
+      email: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    const userInfo = LocalStorageManager.getItem(STORAGE_KEYS.USER_INFO);
+    return userInfo || defaultInfo;
+  }
+
+  static saveInfo(userInfo) {
+    const updatedInfo = {
+      ...userInfo,
+      updatedAt: new Date().toISOString()
+    };
+    return LocalStorageManager.setItem(STORAGE_KEYS.USER_INFO, updatedInfo);
   }
 }
 
@@ -257,6 +322,7 @@ export {
   LocalStorageManager,
   BusinessCardStorage,
   CompanyStorage,
+  UserStorage,
   DataManager,
   STORAGE_KEYS
 }; 
