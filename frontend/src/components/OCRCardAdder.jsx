@@ -8,14 +8,16 @@ const OCRCardAdder = () => {
   const [ocrResult, setOcrResult] = useState('');
   const [formData, setFormData] = useState({
     name: '',
+    name_en: '',
     email: '',
-    phone: '',
+    phone_number: '',
     position: '',
-    company: { name: '' },
+    company_name: '',
     address: '',
-    mobile: '',
-    fax: '',
-    department: ''
+    mobile_phone_number: '',
+    fax_number: '',
+    department: '',
+    postal_code: ''
   });
   const [showForm, setShowForm] = useState(false);
   
@@ -43,14 +45,16 @@ const OCRCardAdder = () => {
       setFormData(prev => ({
         ...prev,
         name: parsedData.name || '',
+        name_en: parsedData.name_en || '',
         email: parsedData.email || '',
-        phone: parsedData.phone || '',
+        phone_number: parsedData.phone_number || parsedData.phone || '',
         position: parsedData.position || '',
-        company: { name: parsedData.company_name || '' },
+        company_name: parsedData.company_name || '',
         address: parsedData.address || '',
-        mobile: parsedData.mobile || '',
-        fax: parsedData.fax || '',
-        department: parsedData.department || ''
+        mobile_phone_number: parsedData.mobile_phone_number || parsedData.mobile || '',
+        fax_number: parsedData.fax_number || parsedData.fax || '',
+        department: parsedData.department || '',
+        postal_code: parsedData.postal_code || ''
       }));
       setShowForm(true);
       
@@ -67,7 +71,7 @@ const OCRCardAdder = () => {
     if (name === 'companyName') {
       setFormData(prev => ({
         ...prev,
-        company: { name: value }
+        company_name: value
       }));
     } else {
       setFormData(prev => ({
@@ -81,22 +85,23 @@ const OCRCardAdder = () => {
     e.preventDefault();
     const success = saveCard({
       ...formData,
-      company_name: formData.company.name,
-      company: null,
+      company_name: formData.company_name,
       ocr_raw_text: ocrResult
     });
     if (success) {
       alert('명함이 저장되었습니다!');
       setFormData({
         name: '',
+        name_en: '',
         email: '',
-        phone: '',
+        phone_number: '',
         position: '',
-        company: { name: '' },
+        company_name: '',
         address: '',
-        mobile: '',
-        fax: '',
-        department: ''
+        mobile_phone_number: '',
+        fax_number: '',
+        department: '',
+        postal_code: ''
       });
       setShowForm(false);
       setOcrResult('');
@@ -133,7 +138,7 @@ const OCRCardAdder = () => {
             <input
               type="text"
               name="companyName"
-              value={formData.company.name}
+              value={formData.company_name}
               onChange={handleInputChange}
             />
           </div>
@@ -172,8 +177,8 @@ const OCRCardAdder = () => {
             <label>전화번호:</label>
             <input
               type="tel"
-              name="phone"
-              value={formData.phone}
+              name="phone_number"
+              value={formData.phone_number}
               onChange={handleInputChange}
             />
           </div>
@@ -182,8 +187,8 @@ const OCRCardAdder = () => {
             <label>휴대폰:</label>
             <input
               type="tel"
-              name="mobile"
-              value={formData.mobile}
+              name="mobile_phone_number"
+              value={formData.mobile_phone_number}
               onChange={handleInputChange}
             />
           </div>
@@ -192,8 +197,8 @@ const OCRCardAdder = () => {
             <label>팩스:</label>
             <input
               type="tel"
-              name="fax"
-              value={formData.fax}
+              name="fax_number"
+              value={formData.fax_number}
               onChange={handleInputChange}
             />
           </div>

@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import os
 import shutil
 from pydantic import BaseModel
@@ -42,7 +42,7 @@ ocr_processor = OCRProcessor(UPLOAD_FOLDER)
 
 class ProcessingResult(BaseModel):
     filename: str
-    extracted_text: List[str] = []
+    parsed: Optional[Dict[str, Any]] = None
     error: Optional[str] = None
 
 class OCRResult(BaseModel):
@@ -164,7 +164,7 @@ async def upload_files(files: List[UploadFile] = File(...)):
             
             results.append(ProcessingResult(
                 filename=file.filename,
-                extracted_text=ocr_result
+                parsed=parsed_result
             ))
             
         except Exception as e:

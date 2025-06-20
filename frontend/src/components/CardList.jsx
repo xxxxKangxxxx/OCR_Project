@@ -24,9 +24,10 @@ const BusinessCard = ({ card, onEdit }) => {
       <div className="card-header">
         <div className="card-main-info">
           <h2 className="name">{card.name}</h2>
+          {card.name_en && <p className="name-en">{card.name_en}</p>}
           <p className="position">{card.position}</p>
+          {card.department && <p className="department">{card.department}</p>}
           <p className="company">{card.company_name}</p>
-          <p className="department">{card.department}</p>
         </div>
         <div className="card-actions">
           <button
@@ -49,19 +50,31 @@ const BusinessCard = ({ card, onEdit }) => {
         </div>
       </div>
       <div className="card-details">
-        <div className="contact-info">
-          <span className="label">이메일:</span> {card.email}
-        </div>
-        <div className="contact-info">
-          <span className="label">전화:</span> {card.phone}
-        </div>
-        <div className="contact-info">
-          <span className="label">휴대폰:</span> {card.mobile}
-        </div>
+        {card.phone_number && (
+          <p className="contact-info">
+            <span className="label">전화:</span> {card.phone_number}
+          </p>
+        )}
+        {card.mobile_phone_number && (
+          <p className="contact-info">
+            <span className="label">휴대폰:</span> {card.mobile_phone_number}
+          </p>
+        )}
+        {card.fax_number && (
+          <p className="contact-info">
+            <span className="label">팩스:</span> {card.fax_number}
+          </p>
+        )}
+        {card.email && (
+          <p className="contact-info">
+            <span className="label">이메일:</span> {card.email}
+          </p>
+        )}
         {card.address && (
-          <div className="contact-info">
+          <p className="contact-info">
             <span className="label">주소:</span> {card.address}
-          </div>
+            {card.postal_code && <span className="postal-code"> ({card.postal_code})</span>}
+          </p>
         )}
       </div>
     </div>
@@ -112,9 +125,15 @@ const CardList = () => {
     if (success) {
       alert('명함이 수정되었습니다.');
       setIsModalOpen(false);
+      setSelectedCard(null);
     } else {
       alert('명함 수정에 실패했습니다.');
     }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCard(null);
   };
 
   return (
@@ -138,7 +157,7 @@ const CardList = () => {
         <EditCardModal
           card={selectedCard}
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleCloseModal}
           onSave={handleSaveCard}
         />
       )}

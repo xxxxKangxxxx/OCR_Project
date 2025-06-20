@@ -1,25 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useBusinessCards } from '../utils/useLocalStorage';
 import './CompanyCards.css';
 
 // 모달 컴포넌트
 const EditCardModal = ({ card, isOpen, onClose, onSave }) => {
-  const [editedCard, setEditedCard] = useState(card);
+  const [editedCard, setEditedCard] = useState({
+    id: card?.id || '',
+    name: card?.name || '',
+    name_en: card?.name_en || '',
+    company_name: card?.company_name || '',
+    department: card?.department || '',
+    position: card?.position || '',
+    phone_number: card?.phone_number || '',
+    mobile_phone_number: card?.mobile_phone_number || '',
+    fax_number: card?.fax_number || '',
+    email: card?.email || '',
+    address: card?.address || '',
+    postal_code: card?.postal_code || '',
+    created_at: card?.created_at || '',
+    updated_at: card?.updated_at || '',
+    isFavorite: card?.isFavorite || false
+  });
+
+  // 카드 데이터가 변경될 때마다 editedCard 상태 업데이트
+  useEffect(() => {
+    if (card) {
+      setEditedCard({
+        id: card.id || '',
+        name: card.name || '',
+        name_en: card.name_en || '',
+        company_name: card.company_name || '',
+        department: card.department || '',
+        position: card.position || '',
+        phone_number: card.phone_number || '',
+        mobile_phone_number: card.mobile_phone_number || '',
+        fax_number: card.fax_number || '',
+        email: card.email || '',
+        address: card.address || '',
+        postal_code: card.postal_code || '',
+        created_at: card.created_at || '',
+        updated_at: card.updated_at || '',
+        isFavorite: card.isFavorite || false
+      });
+    }
+  }, [card]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEditedCard(prev => ({
       ...prev,
-      [name]: value,
-      company_name: name === 'company_name' ? value : prev.company_name
+      [name]: value
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave(editedCard);
-    onClose();
   };
 
   if (!isOpen) return null;
@@ -33,104 +70,133 @@ const EditCardModal = ({ card, isOpen, onClose, onSave }) => {
             <button className="close-button" onClick={onClose}>&times;</button>
           </div>
           <div className="modal-body">
-            <form onSubmit={handleSubmit} className="edit-form">
-              <div className="form-group">
-                <label htmlFor="company_name">회사명</label>
-                <input
-                  type="text"
-                  id="company_name"
-                  name="company_name"
-                  value={editedCard.company_name || ''}
-                  onChange={handleChange}
-                />
-              </div>
+            <form className="edit-form" onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="name">이름</label>
                 <input
                   type="text"
                   id="name"
                   name="name"
-                  value={editedCard.name || ''}
+                  value={editedCard.name}
                   onChange={handleChange}
                 />
               </div>
+              
               <div className="form-group">
-                <label htmlFor="position">직책</label>
+                <label htmlFor="name_en">영문 이름</label>
                 <input
                   type="text"
-                  id="position"
-                  name="position"
-                  value={editedCard.position || ''}
+                  id="name_en"
+                  name="name_en"
+                  value={editedCard.name_en}
                   onChange={handleChange}
                 />
               </div>
+
+              <div className="form-group">
+                <label htmlFor="company_name">회사명</label>
+                <input
+                  type="text"
+                  id="company_name"
+                  name="company_name"
+                  value={editedCard.company_name}
+                  onChange={handleChange}
+                />
+              </div>
+
               <div className="form-group">
                 <label htmlFor="department">부서</label>
                 <input
                   type="text"
                   id="department"
                   name="department"
-                  value={editedCard.department || ''}
+                  value={editedCard.department}
                   onChange={handleChange}
                 />
               </div>
+
+              <div className="form-group">
+                <label htmlFor="position">직책</label>
+                <input
+                  type="text"
+                  id="position"
+                  name="position"
+                  value={editedCard.position}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="phone_number">전화번호</label>
+                <input
+                  type="tel"
+                  id="phone_number"
+                  name="phone_number"
+                  value={editedCard.phone_number}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="mobile_phone_number">휴대폰</label>
+                <input
+                  type="tel"
+                  id="mobile_phone_number"
+                  name="mobile_phone_number"
+                  value={editedCard.mobile_phone_number}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="fax_number">팩스</label>
+                <input
+                  type="tel"
+                  id="fax_number"
+                  name="fax_number"
+                  value={editedCard.fax_number}
+                  onChange={handleChange}
+                />
+              </div>
+
               <div className="form-group">
                 <label htmlFor="email">이메일</label>
                 <input
                   type="email"
                   id="email"
                   name="email"
-                  value={editedCard.email || ''}
+                  value={editedCard.email}
                   onChange={handleChange}
                 />
               </div>
-              <div className="form-group">
-                <label htmlFor="phone">전화번호</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={editedCard.phone || ''}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="mobile">휴대폰</label>
-                <input
-                  type="tel"
-                  id="mobile"
-                  name="mobile"
-                  value={editedCard.mobile || ''}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="fax">팩스</label>
-                <input
-                  type="tel"
-                  id="fax"
-                  name="fax"
-                  value={editedCard.fax || ''}
-                  onChange={handleChange}
-                />
-              </div>
+
               <div className="form-group">
                 <label htmlFor="address">주소</label>
                 <input
                   type="text"
                   id="address"
                   name="address"
-                  value={editedCard.address || ''}
+                  value={editedCard.address}
                   onChange={handleChange}
                 />
               </div>
+
+              <div className="form-group">
+                <label htmlFor="postal_code">우편번호</label>
+                <input
+                  type="text"
+                  id="postal_code"
+                  name="postal_code"
+                  value={editedCard.postal_code}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-actions">
+                <button type="submit" className="save-button">저장</button>
+                <button type="button" className="cancel-button" onClick={onClose}>취소</button>
+              </div>
             </form>
-          </div>
-          <div className="modal-footer">
-            <div className="form-actions">
-              <button type="button" onClick={onClose} className="cancel-button">취소</button>
-              <button type="button" onClick={handleSubmit} className="save-button">저장</button>
-            </div>
           </div>
         </div>
       </div>
@@ -213,12 +279,11 @@ const CompanyCards = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleBack = () => {
-    navigate(-1); // 브라우저의 히스토리에서 이전 페이지로 이동
+    navigate(-1);
   };
 
   // 현재 회사의 명함만 필터링
   const companyCards = cards.filter(card => 
-    card.company?.name === decodeURIComponent(companyName) ||
     card.company_name === decodeURIComponent(companyName)
   );
 
@@ -231,6 +296,8 @@ const CompanyCards = () => {
     const success = updateCard(editedCard.id, editedCard);
     if (success) {
       alert('명함이 수정되었습니다.');
+      setIsModalOpen(false);
+      setSelectedCard(null);
       // 회사명이 변경되었다면 홈페이지로 이동
       if (editedCard.company_name !== companyName) {
         navigate('/');
@@ -238,6 +305,11 @@ const CompanyCards = () => {
     } else {
       alert('명함 수정에 실패했습니다.');
     }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCard(null);
   };
 
   return (
@@ -261,7 +333,7 @@ const CompanyCards = () => {
         <EditCardModal
           card={selectedCard}
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleCloseModal}
           onSave={handleSaveCard}
         />
       )}

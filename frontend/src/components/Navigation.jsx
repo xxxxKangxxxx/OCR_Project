@@ -19,208 +19,82 @@ const Navigation = () => {
     const files = event.target.files;
     console.log('📁 파일 선택됨:', files);
     
-    if (files.length > 0) {
-      // 모바일 디버깅용 - 선택된 파일 정보 표시
-      const fileInfo = Array.from(files).map((file, i) => 
-        `파일 ${i + 1}: ${file.name}\n크기: ${(file.size / 1024 / 1024).toFixed(2)}MB\n타입: ${file.type}`
-      ).join('\n\n');
-      
-      if (confirm(`선택된 파일:\n\n${fileInfo}\n\n계속 진행하시겠습니까?`)) {
-        setIsUploading(true);
-        
-        try {
-          // 네트워크 연결 테스트
-          console.log('🌐 네트워크 연결 테스트 시작...');
-          alert(`네트워크 연결 테스트 시작...\nAPI URL: ${API_URL}`);
-          
-          try {
-            const testResponse = await fetch(`${API_URL}/docs`, {
-              method: 'GET',
-              mode: 'cors',
-            });
-            console.log('✅ 네트워크 연결 테스트 성공:', testResponse.status);
-            alert(`네트워크 연결 테스트 성공!\n상태: ${testResponse.status}`);
-          } catch (networkError) {
-            console.error('❌ 네트워크 연결 실패:', networkError);
-            alert(`네트워크 연결 실패!\n\n오류: ${networkError.message}\n\n서버가 실행 중인지 확인해주세요.`);
-            throw new Error(`네트워크 연결 실패: ${networkError.message}`);
-          }
+    if (!files || files.length === 0) {
+      console.log('❌ 파일이 선택되지 않음');
+      return;
+    }
 
-          // 선택된 파일들에 대한 상세 정보 로그
-          for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            console.log(`📄 파일 ${i + 1}:`, {
-              name: file.name,
-              size: file.size,
-              type: file.type,
-              lastModified: file.lastModified
-            });
-          }
+    setIsUploading(true);
+    const formData = new FormData();
+    Array.from(files).forEach(file => {
+      formData.append('files', file);
+    });
 
-          // 파일 크기 및 형식 검사
-          for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            // 파일 크기 제한 (10MB)
-            if (file.size > 10 * 1024 * 1024) {
-              throw new Error(`파일 크기가 너무 큽니다 (최대 10MB): ${file.name}`);
-            }
-            // 허용된 파일 형식 검사
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/heic', 'image/heif', 'application/pdf'];
-            if (!allowedTypes.includes(file.type.toLowerCase())) {
-              console.error('❌ 지원하지 않는 파일 형식:', file.type);
-              alert(`지원하지 않는 파일 형식입니다.\n\n파일: ${file.name}\n타입: ${file.type}\n\n지원되는 형식: JPG, PNG, HEIC, HEIF, PDF`);
-              throw new Error(`지원하지 않는 파일 형식입니다 (${file.type}). 지원되는 형식: JPG, PNG, HEIC, HEIF, PDF`);
-            }
-          }
+    try {
+      console.log('🌐 API 요청 시작');
+      const response = await fetch(`${API_URL}/api/upload`, {
+        method: 'POST',
+        body: formData
+      });
 
-          const formData = new FormData();
-          
-          // 각 파일 처리
-          for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            try {
-              console.log(`🔄 파일 처리 중: ${file.name}`);
-              
-              // 이미지 파일인 경우에만 리사이징
-              if (file.type.startsWith('image/')) {
-                console.log(`🖼️ 이미지 처리 시작: ${file.name}`);
-                alert(`이미지 처리 시작: ${file.name}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const results = await response.json();
+      console.log('📥 API 응답 받음:', results);
+
+      if (Array.isArray(results)) {
+        const hasError = results.some(result => result.error);
+        if (hasError) {
+          const errorMessages = results
+            .filter(result => result.error)
+            .map(result => `${result.filename}: ${result.error}`)
+            .join('\n');
+          alert(`파일 처리 중 오류가 발생했습니다:\n${errorMessages}`);
+        } else {
+          // 성공한 결과들을 로컬스토리지에 저장
+          let savedCount = 0;
+          results.forEach(result => {
+            if (result.parsed && !result.error) {
+              try {
+                const cardData = {
+                  ...result.parsed,
+                  original_filename: result.filename,
+                  company: null  // company 객체 제거
+                };
                 
-                const processedFile = await processImage(file);
-                console.log(`✅ 이미지 처리 완료: ${file.name}`, {
-                  originalSize: file.size,
-                  processedSize: processedFile.size
-                });
-                alert(`이미지 처리 완료: ${file.name}\n원본 크기: ${(file.size / 1024 / 1024).toFixed(2)}MB\n처리 후: ${(processedFile.size / 1024 / 1024).toFixed(2)}MB`);
-                
-                formData.append('files', processedFile, file.name);
-              } else {
-                console.log(`📄 PDF 파일 추가: ${file.name}`);
-                formData.append('files', file);
-              }
-            } catch (error) {
-              console.error(`❌ 파일 처리 중 오류 (${file.name}):`, error);
-              console.error('오류 상세:', {
-                message: error.message,
-                stack: error.stack,
-                name: error.name
-              });
-              
-              // 모바일용 상세 에러 정보
-              alert(`파일 처리 중 오류 발생!\n\n파일: ${file.name}\n오류: ${error.message}\n\n오류 타입: ${error.name}`);
-              throw new Error(`이미지 처리 중 오류가 발생했습니다: ${file.name} - ${error.message}`);
-            }
-          }
-
-          console.log('📤 서버로 업로드 시작...');
-          console.log('🌐 API URL:', API_URL);
-          alert(`서버로 업로드 시작...\nAPI URL: ${API_URL}`);
-
-          const response = await fetch(API_ENDPOINTS.UPLOAD, {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-            },
-            body: formData,
-          });
-
-          console.log('📥 서버 응답 받음:', {
-            status: response.status,
-            statusText: response.statusText,
-            ok: response.ok
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            console.error('❌ 서버 오류 응답:', errorData);
-            alert(`서버 오류 발생!\n\n상태: ${response.status} ${response.statusText}\n오류 내용: ${errorData?.detail || '알 수 없는 오류'}`);
-            throw new Error(errorData?.detail || `서버 오류 (${response.status}): ${response.statusText}`);
-          }
-
-          const results = await response.json();
-          console.log('✅ 업로드 결과:', results);
-          
-          // 결과 처리 및 로컬스토리지 저장
-          if (Array.isArray(results)) {
-            const hasError = results.some(result => result.error);
-            if (hasError) {
-              const errorMessages = results
-                .filter(result => result.error)
-                .map(result => `${result.filename}: ${result.error}`)
-                .join('\n');
-              alert(`파일 처리 중 오류가 발생했습니다:\n${errorMessages}`);
-            } else {
-              // 성공한 결과들을 로컬스토리지에 저장
-              let savedCount = 0;
-              results.forEach(result => {
-                if (result.extracted_text && result.extracted_text.length > 0 && !result.error) {
-                  try {
-                    const parsedData = parseOCRText(result.extracted_text);
-                    
-                    // 최소한의 정보가 있는 경우에만 저장
-                    if (parsedData.name || parsedData.email || parsedData.phone || parsedData.company_name) {
-                      const cardData = {
-                        ...parsedData,
-                        original_filename: result.filename,
-                        company: null  // company 객체 제거
-                      };
-                      
-                      console.log('Saving card data:', cardData);
-                      const success = saveCard(cardData);
-                      if (success) {
-                        savedCount++;
-                      }
-                    }
-                  } catch (parseError) {
-                    console.error('OCR 결과 파싱 오류:', parseError);
-                  }
+                console.log('Saving card data:', cardData);
+                const success = saveCard(cardData);
+                if (success) {
+                  savedCount++;
                 }
-              });
-              
-              // 성공 메시지 표시
-              const message = `🎉 명함 처리 완료!\n\n처리된 파일: ${results.length}개\n저장된 명함: ${savedCount}개`;
-              
-              // 저장된 명함이 있으면 자동으로 홈으로 이동
-              if (savedCount > 0) {
-                alert(message + '\n\n홈페이지로 이동합니다!');
-                
-                // 데이터 새로고침 후 홈으로 이동
-                refreshCards(); // 로컬스토리지 데이터 새로고침
-                setTimeout(() => {
-                  navigate('/'); // 홈페이지로 이동
-                }, 500);
-              } else {
-                alert(message);
+              } catch (error) {
+                console.error('명함 데이터 저장 오류:', error);
               }
             }
-          } else {
-            throw new Error('서버 응답 형식이 올바르지 않습니다.');
-          }
-          
-        } catch (error) {
-          console.error('❌ 전체 업로드 프로세스 오류:', error);
-          console.error('오류 상세 정보:', {
-            message: error.message,
-            stack: error.stack,
-            name: error.name,
-            cause: error.cause
           });
           
-          // 더 구체적인 에러 메시지 제공
-          let userMessage = '파일 업로드 중 오류가 발생했습니다.';
-          if (error.message.includes('Load failed')) {
-            userMessage += '\n\n가능한 원인:\n- 네트워크 연결 문제\n- 파일이 손상되었거나 지원되지 않는 형식\n- 서버 연결 실패';
-          } else if (error.message.includes('Failed to fetch')) {
-            userMessage += '\n\n네트워크 오류: 서버에 연결할 수 없습니다.';
-          } else {
-            userMessage += `\n\n오류 내용: ${error.message}`;
+          // 성공 메시지 표시
+          const message = `🎉 명함 처리 완료!\n\n처리된 파일: ${results.length}개\n저장된 명함: ${savedCount}개`;
+          alert(message);
+          
+          // 저장된 명함이 있으면 자동으로 홈으로 이동
+          if (savedCount > 0 && location.pathname !== '/') {
+            navigate('/');
           }
           
-          alert(userMessage);
-        } finally {
-          setIsUploading(false);
-          event.target.value = ''; // 파일 선택 초기화
+          // 명함 목록 새로고침
+          refreshCards();
         }
+      }
+    } catch (error) {
+      console.error('❌ API 요청 실패:', error);
+      alert('명함 처리 중 오류가 발생했습니다.');
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
       }
     }
   };
