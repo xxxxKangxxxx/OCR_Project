@@ -1,0 +1,51 @@
+.circular-progress-container {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  transform: scale(1.5);
+}
+
+.circular-progress {
+  transform: rotate(-90deg);
+}
+
+.circular-progress-background {
+  fill: none;
+  stroke: #e0e0e0;
+  opacity: 0.3;
+  stroke-linecap: round;
+}
+
+.circular-progress-bar {
+  fill: none;
+  stroke: #3db4f2;
+  transition: stroke-dashoffset 0.3s ease;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 2px rgba(61, 180, 242, 0.5));
+}
+
+.circular-progress-text {
+  position: absolute;
+  font-size: 16px;
+  font-weight: 600;
+  color: #3db4f2;
+  text-shadow: 0 0 10px rgba(61, 180, 242, 0.3);
+}
+
+/* 애니메이션 효과 */
+@keyframes pulse {
+  0% {
+    filter: drop-shadow(0 0 2px rgba(61, 180, 242, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 4px rgba(61, 180, 242, 0.7));
+  }
+  100% {
+    filter: drop-shadow(0 0 2px rgba(61, 180, 242, 0.5));
+  }
+}
+
+.circular-progress-bar {
+  animation: pulse 2s infinite;
+} 

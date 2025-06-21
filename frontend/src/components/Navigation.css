@@ -1,10 +1,15 @@
 .navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
   display: flex;
   justify-content: space-around;
   align-items: center;
   padding: 0.3rem 1rem;
-  background-color: white;
-  height: 100%;
+  border-top: 1px solid #e5e7eb;
+  height: 60px;
 }
 
 .nav-item {
@@ -36,4 +41,9 @@
 .nav-icon {
   width: 1.3rem;
   height: 1.3rem;
+}
+
+.nav-item.uploading {
+  opacity: 0.7;
+  cursor: not-allowed;
 } 
