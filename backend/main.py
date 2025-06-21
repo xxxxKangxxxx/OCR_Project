@@ -47,6 +47,18 @@ class ProcessingResult(BaseModel):
 
 class OCRResult(BaseModel):
     text: List[str]
+    name: Optional[str] = None
+    name_en: Optional[str] = None
+    email: Optional[str] = None
+    phone_number: Optional[str] = None
+    position: Optional[str] = None
+    company_name: Optional[str] = None
+    address: Optional[str] = None
+    mobile_phone_number: Optional[str] = None
+    fax_number: Optional[str] = None
+    department: Optional[str] = None
+    postal_code: Optional[str] = None
+    ocr_raw_text: Optional[str] = None
     error: Optional[str] = None
 
 @app.get("/")
@@ -64,7 +76,7 @@ async def root():
 
 @app.post("/api/ocr", response_model=OCRResult)
 async def process_ocr(files: List[UploadFile] = File(...)):
-    """OCR 전용 엔드포인트 - 프론트엔드 호환성을 위해 추가"""
+    """OCR 전용 엔드포인트 - OCR 처리 및 파싱 결과 반환"""
     try:
         # 첫 번째 파일만 처리 (단일 파일 OCR용)
         file = files[0] if files else None
@@ -96,7 +108,27 @@ async def process_ocr(files: List[UploadFile] = File(...)):
             ocr_result = await ocr_processor.process_image(file_path)
             logger.info(f"✅ OCR processing completed for {file.filename}")
             
-            return OCRResult(text=ocr_result, error=None)
+            # OCR 결과 파싱
+            parsed_result = parse_ocr_result(ocr_result, file.filename)
+            logger.info(f"✅ Parsing completed for {file.filename}")
+            
+            # OCR 결과와 파싱 결과 합치기
+            return OCRResult(
+                text=ocr_result,
+                name=parsed_result.get('name'),
+                name_en=parsed_result.get('name_en'),
+                email=parsed_result.get('email'),
+                phone_number=parsed_result.get('phone'),
+                position=parsed_result.get('position'),
+                company_name=parsed_result.get('company_name'),
+                address=parsed_result.get('address'),
+                mobile_phone_number=parsed_result.get('mobile'),
+                fax_number=parsed_result.get('fax'),
+                department=parsed_result.get('department'),
+                postal_code=parsed_result.get('postal_code'),
+                ocr_raw_text=parsed_result.get('ocr_raw_text'),
+                error=None
+            )
             
         except Exception as e:
             logger.error(f"❌ Error processing OCR for {file.filename}: {str(e)}", exc_info=True)

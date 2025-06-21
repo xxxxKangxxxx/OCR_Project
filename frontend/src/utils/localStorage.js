@@ -89,21 +89,59 @@ class BusinessCardStorage {
     return cards.find(card => card.id === id) || null;
   }
 
+  // 명함 검색
+  static search(query) {
+    const cards = this.getAll();
+    const lowerQuery = query.toLowerCase();
+    
+    return cards.filter(card => {
+      return (
+        card.name?.toLowerCase().includes(lowerQuery) ||
+        card.email?.toLowerCase().includes(lowerQuery) ||
+        card.phone_number?.includes(query) ||
+        card.company_name?.toLowerCase().includes(lowerQuery) ||
+        card.position?.toLowerCase().includes(lowerQuery)
+      );
+    });
+  }
+
   // 명함 저장/업데이트
   static save(cardData) {
     const cards = this.getAll();
     const now = new Date().toISOString();
     
-    if (cardData.id) {
+    // 데이터 정규화
+    const normalizedCardData = {
+      id: cardData.id,
+      name: cardData.name,
+      name_en: cardData.name_en,
+      email: cardData.email,
+      phone_number: cardData.phone_number,
+      mobile_phone_number: cardData.mobile_phone_number,
+      fax_number: cardData.fax_number,
+      position: cardData.position,
+      department: cardData.department,
+      company_name: cardData.company_name,
+      address: cardData.address,
+      postal_code: cardData.postal_code,
+      ocr_raw_text: cardData.ocr_raw_text,
+      ocr_confidence: cardData.ocr_confidence,
+      isFavorite: cardData.isFavorite || false
+    };
+    
+    if (normalizedCardData.id) {
       // 업데이트
-      const index = cards.findIndex(card => card.id === cardData.id);
+      const index = cards.findIndex(card => card.id === normalizedCardData.id);
       if (index !== -1) {
-        cards[index] = { ...cardData, updated_at: now };
+        cards[index] = { 
+          ...normalizedCardData,
+          updated_at: now 
+        };
       }
     } else {
       // 새로 생성
       const newCard = {
-        ...cardData,
+        ...normalizedCardData,
         id: Date.now().toString(), // 간단한 ID 생성
         created_at: now,
         updated_at: now
@@ -119,22 +157,6 @@ class BusinessCardStorage {
     const cards = this.getAll();
     const filteredCards = cards.filter(card => card.id !== id);
     return LocalStorageManager.setItem(STORAGE_KEYS.BUSINESS_CARDS, filteredCards);
-  }
-
-  // 명함 검색
-  static search(query) {
-    const cards = this.getAll();
-    const lowerQuery = query.toLowerCase();
-    
-    return cards.filter(card => {
-      return (
-        card.name?.toLowerCase().includes(lowerQuery) ||
-        card.email?.toLowerCase().includes(lowerQuery) ||
-        card.phone?.includes(query) ||
-        card.company?.name?.toLowerCase().includes(lowerQuery) ||
-        card.position?.toLowerCase().includes(lowerQuery)
-      );
-    });
   }
 
   // 즐겨찾기 토글

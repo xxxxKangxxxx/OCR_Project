@@ -81,7 +81,10 @@ class OCRParser:
         
         # 각 정보 추출
         result['email'] = self._extract_email(full_text)
-        result['phone'], result['mobile'], result['fax'] = self._extract_phones(full_text)
+        phone, mobile, fax = self._extract_phones(full_text)
+        result['phone_number'] = phone
+        result['mobile_phone_number'] = mobile
+        result['fax_number'] = fax
         result['postal_code'] = self._extract_postal_code(full_text)
         result['name_en'] = self._extract_english_name(full_text)
         result['company_name'] = self._extract_company_name(text_data)
@@ -560,14 +563,14 @@ class OCRParser:
             missing_fields.append('이름')
         if not result['company_name']:
             missing_fields.append('회사명')
-        if not result['email'] and not result['phone'] and not result['mobile']:
+        if not result['email'] and not result['phone_number'] and not result['mobile_phone_number']:
             missing_fields.append('연락처')
         
         if missing_fields:
             logger.warning(f"누락된 정보: {', '.join(missing_fields)}")
             logger.warning(f"원본 OCR 텍스트 재확인: {text_data}")
         
-        logger.info(f"파싱 완료 - 이름: {result['name']}, 회사: {result['company_name']}, 이메일: {result['email']}, 전화: {result['phone']}")
+        logger.info(f"파싱 완료 - 이름: {result['name']}, 회사: {result['company_name']}, 이메일: {result['email']}, 전화: {result['phone_number']}")
 
 
 # 싱글톤 인스턴스 생성

@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useBusinessCards } from '../utils/useLocalStorage.js';
 import './Navigation.css';
-import { parseOCRText } from '../utils/ocrParser';
 import { API_ENDPOINTS } from '../utils/config';
 
 const Navigation = () => {
@@ -61,7 +60,7 @@ const Navigation = () => {
                 const cardData = {
                   ...result.parsed,
                   original_filename: result.filename,
-                  company: null  // company 객체 제거
+                  company_name: null  // company 객체 제거
                 };
                 
                 console.log('Saving card data:', cardData);
