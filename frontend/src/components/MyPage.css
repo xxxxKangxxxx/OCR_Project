@@ -2,8 +2,8 @@
 .mypage {
   width: 100%;
   height: 100%; /* 전체 높이 사용 */
-  padding: 0 16px 1rem 16px; /* 기본 패딩만 유지 */
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px 16px 1rem 16px; /* 상단 패딩을 20px로 증가 */
+  background: #ffffff; /* Home 페이지와 동일한 흰색 배경 */
   overflow-y: auto; /* 자체 스크롤 관리 */
   overflow-x: hidden; /* 좌우 스크롤 방지 */
   -webkit-overflow-scrolling: touch;
@@ -22,37 +22,48 @@
   margin-bottom: 1rem;
 }
 
-/* 헤더 영역 */
-.mypage-header {
-  padding: 24px 0;
+/* 통합 프로필-통계 카드 */
+.profile-stats-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
   margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
+  transform: translateZ(0);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.user-profile {
+.profile-stats-card:hover {
+  transform: translateY(-2px) translateZ(0);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12), 0 6px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* 프로필 헤더 (상단) */
+.profile-header {
   display: flex;
   align-items: center;
-  gap: 16px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  gap: 24px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f3f4f6;
 }
 
-.avatar-container {
+.avatar-container-small {
   position: relative;
+  flex-shrink: 0;
 }
 
-.user-avatar {
-  width: 90px;
-  height: 90px;
+.user-avatar-small {
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   object-fit: cover;
   background: linear-gradient(45deg, #4A90E2, #67B26F);
 }
 
-.user-avatar.default-avatar {
+.user-avatar-small.default-avatar {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -60,51 +71,49 @@
   background: linear-gradient(45deg, #4A90E2, #67B26F);
 }
 
-.user-avatar.default-avatar svg {
-  width: 50px;
-  height: 50px;
-}
-
-.user-info {
+.user-info-compact {
   flex: 1;
+  text-align: left;
 }
 
-.user-name {
-  color: white;
-  font-size: 24px;
+.user-name-compact {
+  color: #1f2937;
+  font-size: 20px;
   font-weight: 700;
   margin: 0 0 4px 0;
+  text-align: left;
 }
 
-.user-email {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 16px;
+.user-email-compact {
+  color: #6b7280;
+  font-size: 14px;
   margin: 0 0 4px 0;
 }
 
-.join-date {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 14px;
+.join-date-compact {
+  color: #9ca3af;
+  font-size: 12px;
   margin: 0;
 }
 
-/* 통계 그리드 */
-.stats-grid {
+/* 통계 그리드 (통합 카드 내부) */
+.stats-grid-compact {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  margin-bottom: 24px;
 }
 
 .stat-card {
-  background: white;
+  background: #f8f9fa;
   border-radius: 12px;
-  padding: 20px;
+  padding: 16px;
   display: flex;
+  gap: 12px;
   align-items: center;
-  gap: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  transform: translateZ(0);
 }
 
 .stat-card.clickable {
@@ -112,34 +121,30 @@
 }
 
 .stat-card.clickable:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px) translateZ(0);
+  background: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 }
 
 .stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: #6b7280;
+  background: transparent;
+  flex-shrink: 0;
 }
 
-.stat-icon.total-cards {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.stat-icon.total-companies {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.stat-icon.favorite-cards {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
+/* 개별 아이콘 색상 제거 - 모든 아이콘이 동일한 심플한 스타일 */
+.stat-icon.total-cards,
+.stat-icon.total-companies,
+.stat-icon.favorite-cards,
 .stat-icon.recent-scans {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: #6b7280;
+  background: transparent;
 }
 
 .stat-content {
@@ -147,14 +152,14 @@
 }
 
 .stat-number {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   color: #2c3e50;
-  margin: 0 0 4px 0;
+  margin: 0 0 2px 0;
 }
 
 .stat-label {
-  font-size: 14px;
+  font-size: 12px;
   color: #7f8c8d;
   margin: 0;
 }
@@ -162,12 +167,12 @@
 /* 탭 영역 */
 .mypage-tabs {
   display: flex;
-  background: rgba(255, 255, 255, 0.1);
+  background: #ffffff;
   border-radius: 12px;
   padding: 4px;
   margin-bottom: 20px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .tab-button {
@@ -175,7 +180,7 @@
   padding: 12px 16px;
   border: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.7);
+  color: #6b7280;
   font-size: 14px;
   font-weight: 500;
   border-radius: 8px;
@@ -184,14 +189,15 @@
 }
 
 .tab-button.active {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+  background: #f3f4f6;
+  color: #1f2937;
   font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .tab-button:not(.active):hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.9);
+  background: #f9fafb;
+  color: #374151;
 }
 
 /* 탭 컨텐츠 */
@@ -200,17 +206,23 @@
 }
 
 .section-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: #ffffff;
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  transform: translateZ(0); /* 3D 가속 활성화 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.section-card:hover {
+  transform: translateY(-4px) translateZ(0);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12), 0 6px 15px rgba(0, 0, 0, 0.08);
 }
 
 .section-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: #2c3e50;
   margin: 0 0 20px 0;
@@ -243,34 +255,38 @@
 .form-group input {
   width: 100%;
   padding: 12px 16px;
-  border: 1px solid #ddd;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 14px;
+  background: #ffffff;
+  color: #1f2937;
   transition: all 0.3s ease;
   box-sizing: border-box;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #4A90E2;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .update-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #3b82f6;
   color: white;
   border: none;
-  padding: 12px 24px;
+  padding: 6px 16px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .update-btn:hover {
+  background: #2563eb;
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
 
 /* 활동 목록 */
@@ -476,25 +492,37 @@ input:checked + .toggle-slider:before {
   box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
 }
 
-/* 반응형 디자인 */
+/* 반응형 디자인 - 1열 레이아웃 유지하면서 크기만 조절 */
 @media (max-width: 480px) {
   .mypage {
-    padding: 0 12px 80px 12px;
+    padding: 20px 12px 80px 12px;
   }
   
-  .user-profile {
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
+  .profile-header {
+    align-items: center;
+    gap: 32px;
   }
   
-  .stats-grid {
-    grid-template-columns: 1fr;
+  .stats-grid-compact {
+    grid-template-columns: repeat(2, 1fr); /* 작은 화면에서도 2x2 그리드 유지 */
     gap: 8px;
   }
   
   .stat-card {
-    padding: 16px;
+    padding: 12px; /* 작은 화면에서 패딩 축소 */
+  }
+  
+  .stat-icon {
+    width: 28px; /* 작은 화면에서 아이콘 크기 축소 */
+    height: 28px;
+  }
+  
+  .stat-number {
+    font-size: 16px; /* 작은 화면에서 숫자 크기 축소 */
+  }
+  
+  .stat-label {
+    font-size: 10px; /* 작은 화면에서 라벨 크기 축소 */
   }
   
   .section-card {
@@ -526,50 +554,138 @@ input:checked + .toggle-slider:before {
   }
 }
 
-/* 다크 모드 지원 */
-@media (prefers-color-scheme: dark) {
-  .mypage {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+/* 큰 화면에서의 추가 스타일 */
+@media (min-width: 768px) {
+
+  
+  .profile-stats-card {
+    max-width: 500px; /* 통합 카드 최대 너비 제한 */
+    margin-left: auto;
+    margin-right: auto;
   }
   
   .section-card {
-    background: rgba(52, 73, 94, 0.95);
-    color: white;
+    max-width: 500px; /* 섹션 카드도 최대 너비 제한 */
+    margin-left: auto;
+    margin-right: auto;
   }
   
-  .section-title {
-    color: #ecf0f1;
+  .mypage-tabs {
+    max-width: 500px; /* 탭도 최대 너비 제한 */
+    margin-left: auto;
+    margin-right: auto;
   }
-  
-  .section-description {
-    color: #bdc3c7;
-  }
-  
-  .form-group label {
-    color: #ecf0f1;
-  }
-  
-  .form-group input {
-    background: #34495e;
-    border-color: #4a6741;
-    color: white;
-  }
-  
-  .activity-item {
-    background: #3a5169;
-  }
-  
-  .activity-text {
-    color: #ecf0f1;
-  }
-  
-  .setting-info h4 {
-    color: #ecf0f1;
-  }
-  
-  .setting-info p {
-    color: #bdc3c7;
-  }
+}
+
+/* 다크 모드 지원 - data-theme 속성 사용 */
+[data-theme="dark"] .mypage {
+  background: #1f2937 !important;
+}
+
+[data-theme="dark"] .profile-stats-card {
+  background: #374151 !important;
+  border-color: #4b5563 !important;
+}
+
+[data-theme="dark"] .profile-header {
+  border-bottom-color: #4b5563 !important;
+}
+
+[data-theme="dark"] .user-name-compact {
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .user-email-compact {
+  color: #d1d5db !important;
+}
+
+[data-theme="dark"] .join-date-compact {
+  color: #9ca3af !important;
+}
+
+[data-theme="dark"] .stat-card {
+  background: #4b5563 !important;
+  border-color: #6b7280 !important;
+}
+
+[data-theme="dark"] .stat-number {
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .stat-label {
+  color: #d1d5db !important;
+}
+
+[data-theme="dark"] .mypage-tabs {
+  background: #374151 !important;
+  border-color: #4b5563 !important;
+}
+
+[data-theme="dark"] .tab-button {
+  color: #d1d5db !important;
+}
+
+[data-theme="dark"] .tab-button.active {
+  background: #4b5563 !important;
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .tab-button:not(.active):hover {
+  background: #4b5563 !important;
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .section-card {
+  background: #374151 !important;
+  border-color: #4b5563 !important;
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .section-title {
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .section-description {
+  color: #d1d5db !important;
+}
+
+[data-theme="dark"] .form-group label {
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .form-group input {
+  background: #4b5563 !important;
+  border-color: #6b7280 !important;
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .activity-item {
+  background: #4b5563 !important;
+}
+
+[data-theme="dark"] .activity-text {
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .setting-info h4 {
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .setting-info p {
+  color: #d1d5db !important;
+}
+
+[data-theme="dark"] .stat-icon {
+  color: #9ca3af !important;
+}
+
+[data-theme="dark"] .update-btn {
+  background: #4f46e5 !important;
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .update-btn:hover {
+  background: #4338ca !important;
 }
 
 .empty-state {

@@ -46,4 +46,22 @@
 .nav-item.uploading {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+/* 다크모드 지원 */
+[data-theme="dark"] .navigation {
+  background: #374151 !important;
+  border-top-color: #4b5563 !important;
+}
+
+[data-theme="dark"] .nav-item {
+  color: #9ca3af !important;
+}
+
+[data-theme="dark"] .nav-item.active {
+  color: #60a5fa !important;
+}
+
+[data-theme="dark"] .nav-item:hover {
+  color: #60a5fa !important;
 } 

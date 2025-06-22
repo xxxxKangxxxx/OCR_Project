@@ -13,6 +13,11 @@ const MyPage = () => {
     email: ''
   });
   const [activeTab, setActiveTab] = useState('profile');
+  const [darkMode, setDarkMode] = useState(() => {
+    // 로컬 스토리지에서 다크모드 설정 불러오기
+    const saved = localStorage.getItem('darkMode');
+    return saved ? JSON.parse(saved) : false;
+  });
 
   useEffect(() => {
     if (!userLoading && userInfo && (!userInfo.name || !userInfo.email)) {
@@ -25,6 +30,12 @@ const MyPage = () => {
       });
     }
   }, [userInfo, userLoading]);
+
+  // 다크모드 설정 적용
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
 
   const handleEditClick = () => {
     if (userInfo) {
@@ -64,6 +75,10 @@ const MyPage = () => {
     navigate('/?filter=company');
   };
 
+  const handleDarkModeToggle = () => {
+    setDarkMode(!darkMode);
+  };
+
   if (userLoading) {
     return (
       <div className="mypage">
@@ -82,25 +97,24 @@ const MyPage = () => {
 
   return (
     <div className="mypage">
-      <div className="mypage-header">
-        <div className="user-profile">
-          <div className="avatar-container">
-            <div className="user-avatar default-avatar">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <div className="profile-stats-card">
+        <div className="profile-header">
+          <div className="avatar-container-small">
+            <div className="user-avatar-small default-avatar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
             </div>
           </div>
-          <div className="user-info">
-            <h1 className="user-name">{userInfo.name || '이름 없음'}</h1>
-            <p className="user-email">{userInfo.email || '이메일 없음'}</p>
-            <p className="join-date">가입일: {new Date(userInfo.createdAt || Date.now()).toLocaleDateString()}</p>
+          <div className="user-info-compact">
+            <h1 className="user-name-compact">{userInfo.name || '이름 없음'}</h1>
+            <p className="user-email-compact">{userInfo.email || '이메일 없음'}</p>
+            <p className="join-date-compact">가입일: {new Date(userInfo.createdAt || Date.now()).toLocaleDateString()}</p>
           </div>
         </div>
-      </div>
-
-      <div className="stats-grid">
+        
+        <div className="stats-grid-compact">
         <div className="stat-card clickable" onClick={handleTotalCardsClick}>
           <div className="stat-icon total-cards">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -153,6 +167,7 @@ const MyPage = () => {
           </div>
         </div>
       </div>
+    </div>
 
       <div className="mypage-tabs">
         <button 
@@ -218,6 +233,20 @@ const MyPage = () => {
         {activeTab === 'settings' && (
           <div className="section-card">
             <h2 className="section-title">설정</h2>
+            <div className="setting-item">
+              <div className="setting-info">
+                <h4>다크 모드</h4>
+                <p>어두운 테마를 사용합니다.</p>
+              </div>
+              <label className="toggle-switch">
+                <input 
+                  type="checkbox" 
+                  checked={darkMode}
+                  onChange={handleDarkModeToggle}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            </div>
             <div className="setting-item">
               <div className="setting-info">
                 <h4>알림 설정</h4>

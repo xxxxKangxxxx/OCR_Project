@@ -14,14 +14,14 @@
 
 .loading-modal-content {
   background: rgba(255, 255, 255, 0.1);
-  padding: 4rem 3rem 3rem;
+  padding: 3rem 2.5rem 2.5rem;
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   align-items: center;
   min-width: 300px;
-  max-width: 90%;
+  max-width: 80%;
   min-height: 400px;
   position: relative;
   text-align: center;
@@ -74,13 +74,14 @@
 
 .result-message h3 {
   margin: 1rem 0;
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
 .result-message p {
   margin: 0.5rem 0;
   color: rgba(255, 255, 255, 0.8);
+  font-size: 0.8rem;
 }
 
 .icon-wrapper {
@@ -117,6 +118,13 @@
 /* 애니메이션 효과 */
 .loading-modal-content {
   animation: modalFadeIn 0.3s ease-out;
+}
+
+/* 성공 상태일 때의 모달 크기 */
+.loading-modal-content.success {
+  min-height: 300px;  /* 원하는 높이로 조절 */
+  min-width: 250px;   /* 원하는 너비로 조절 */
+  padding: 2rem;      /* 원하는 패딩으로 조절 */
 }
 
 @keyframes modalFadeIn {

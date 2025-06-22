@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useBusinessCards } from '../utils/useLocalStorage.js';
 import { useLoading } from '../contexts/LoadingContext';
@@ -23,6 +23,19 @@ const Navigation = () => {
   // API URL을 환경에 따라 동적으로 설정 (네트워크 테스트용)
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+  // 업로드 완료 후 처리를 위한 useEffect
+  useEffect(() => {
+    if (uploadProgress === 100) {
+      const timer = setTimeout(() => {
+        if (location.pathname !== '/') {
+          navigate('/');
+        }
+        window.location.reload();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [uploadProgress, location.pathname, navigate]);
+
   const handleFileUpload = async (event) => {
     const files = event.target.files;
     console.log('📁 파일 선택됨:', files);
@@ -46,16 +59,15 @@ const Navigation = () => {
       // 진행 상태를 더 부드럽게 시뮬레이션
       let currentProgress = 0;
       const progressTimer = setInterval(() => {
-        if (currentProgress < 95) {
-          // 남은 진행률에 따라 증가 속도를 동적으로 조절
-          const remainingProgress = 95 - currentProgress;
-          const increment = Math.max(0.5, remainingProgress * 0.01); // 최소 0.5%, 최대 남은 진행률의 1%
+        if (currentProgress <= 100) {
+          const remainingProgress = 100 - currentProgress;
+          const increment = Math.max(0.5, remainingProgress * 0.01);
           currentProgress += increment;
           setUploadProgress(currentProgress);
         } else {
           clearInterval(progressTimer);
         }
-      }, 50); // 50ms마다 업데이트하여 더 부드럽게 표시
+      }, 50);
 
       const response = await fetch(`${API_URL}/api/upload`, {
         method: 'POST',
@@ -88,7 +100,7 @@ const Navigation = () => {
                 const cardData = {
                   ...result.parsed,
                   original_filename: result.filename,
-                  company_name: null  // company 객체 제거
+                  company_name: null
                 };
                 
                 console.log('Saving card data:', cardData);
@@ -102,31 +114,10 @@ const Navigation = () => {
             }
           });
 
-          // 90%에서 100%까지 부드럽게 증가
-          const finalProgressTimer = setInterval(() => {
-            setUploadProgress(prev => {
-              if (prev >= 100) {
-                clearInterval(finalProgressTimer);
-                // 프로그레스바가 100%에 도달한 후 성공 상태로 변경
-                showSuccess(results.length, savedCount);
-                
-                // 저장된 명함이 있으면 자동으로 홈으로 이동하고 새로고침
-                if (savedCount > 0) {
-                  if (location.pathname !== '/') {
-                    navigate('/');
-                  }
-                  setTimeout(() => {
-                    window.location.reload(); // 페이지 새로고침
-                  }, 3000);
-                }
-                
-                // 명함 목록 새로고침
-                refreshCards();
-                return 100;
-              }
-              return prev + 0.5; // 0.5%씩 증가
-            });
-          }, 30);
+          // 프로그레스바를 100%로 설정하고 성공 상태로 변경
+          setUploadProgress(100);
+          showSuccess(results.length, savedCount);
+          refreshCards();
         }
       }
     } catch (error) {
