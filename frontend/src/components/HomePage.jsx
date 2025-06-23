@@ -15,7 +15,7 @@ const HomePage = () => {
   
   const [groupBy, setGroupBy] = useState(initialFilter);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [customColors, setCustomColors] = useState(() => {
     // localStorage에서 저장된 색상 데이터 불러오기
     const savedColors = localStorage.getItem('cardletCustomColors');
@@ -71,15 +71,7 @@ const HomePage = () => {
       if (customColors[company]) {
         return customColors[company];
       }
-      // 회사별 그룹화일 때만 다양한 색상 사용
-      if (groupBy === 'company') {
-        if (!colorMap.has(company)) {
-          colorMap.set(company, baseColors[colorIndex % baseColors.length]);
-          colorIndex++;
-        }
-        return colorMap.get(company);
-      }
-      // 다른 필터 옵션일 때는 기본 색상 사용
+      // 모든 필터 옵션에서 기본 색상 사용
       return defaultColor;
     };
   }, [customColors, groupBy]);
