@@ -7,6 +7,10 @@ import HomePage from './components/HomePage';
 import CompanyCards from './components/CompanyCards';
 import CardList from './components/CardList';
 import MyPage from './components/MyPage';
+import Login from './components/Login';
+import Register from './components/Register';
+import AuthProvider from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // 페이지 이동 시 스크롤을 맨 위로 이동시키는 컴포넌트
 function ScrollToTop() {
@@ -65,38 +69,53 @@ function AppContent() {
   }, []);
 
   return (
-    <Layout>
-      <ScrollToTop />
+    <>
       <Routes>
-        <Route 
-          path="/company/:companyName" 
-          element={<CompanyCards key={`company-${location.pathname}-${Date.now()}`} />} 
-        />
-        <Route 
-          path="/cards/:type" 
-          element={<CardList key={`cards-${location.pathname}-${Date.now()}`} />} 
-        />
-        <Route 
-          path="/cards/date/:date" 
-          element={<CardList key={`cards-date-${location.pathname}-${Date.now()}`} />} 
-        />
-        <Route 
-          path="/mypage" 
-          element={<MyPage key={`mypage-${location.pathname}-${Date.now()}`} />} 
-        />
-        <Route 
-          path="/" 
-          element={<HomePage key={`home-${location.pathname}-${Date.now()}`} />} 
-        />
+        {/* 인증이 필요 없는 페이지들 - ScrollToTop 적용 안함 */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        
+        {/* 인증이 필요한 페이지들 - ScrollToTop 적용 */}
+        <Route path="/*" element={
+          <ProtectedRoute>
+            <ScrollToTop />
+            <Layout>
+              <Routes>
+                <Route 
+                  path="/company/:companyName" 
+                  element={<CompanyCards key={`company-${location.pathname}-${Date.now()}`} />} 
+                />
+                <Route 
+                  path="/cards/:type" 
+                  element={<CardList key={`cards-${location.pathname}-${Date.now()}`} />} 
+                />
+                <Route 
+                  path="/cards/date/:date" 
+                  element={<CardList key={`cards-date-${location.pathname}-${Date.now()}`} />} 
+                />
+                <Route 
+                  path="/mypage" 
+                  element={<MyPage key={`mypage-${location.pathname}-${Date.now()}`} />} 
+                />
+                <Route 
+                  path="/" 
+                  element={<HomePage key={`home-${location.pathname}-${Date.now()}`} />} 
+                />
+              </Routes>
+            </Layout>
+          </ProtectedRoute>
+        } />
       </Routes>
-    </Layout>
+    </>
   );
 }
 
 function App() {
   return (
     <Router>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </Router>
   );
 }

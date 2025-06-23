@@ -26,7 +26,8 @@ body {
 }
 
 #root {
-  width: 390px;
+  width: 100%;
+  max-width: 390px;
   height: 100%;
   margin: 0 auto;
   position: relative;

@@ -49,6 +49,103 @@
   border-bottom: 1px solid #f3f4f6;
 }
 
+/* 프로필 액션 (로그아웃 버튼) */
+.profile-actions {
+  flex-shrink: 0;
+  align-self: flex-start;  /* 상단 정렬 */
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  background: #f3f4f6;
+  border: 0.5px solid #e5e7eb;
+  border-radius: 8px;
+  color: #6b7280;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+/* 로그아웃 모달 */
+.logout-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.logout-modal {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  max-width: 300px;
+  width: 90%;
+  text-align: center;
+}
+
+.logout-modal h3 {
+  margin: 0 0 12px 0;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.logout-modal p {
+  margin: 0 0 24px 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.logout-modal-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.cancel-btn, .confirm-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.cancel-btn:hover {
+  background: #e5e7eb;
+}
+
+.confirm-btn {
+  background: #dc2626;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background: #b91c1c;
+}
+
 .avatar-container-small {
   position: relative;
   flex-shrink: 0;
@@ -74,6 +171,7 @@
 .user-info-compact {
   flex: 1;
   text-align: left;
+  margin-right: -12px;  /* 로그아웃 버튼과의 간격 */
 }
 
 .user-name-compact {
@@ -287,6 +385,66 @@
   background: #2563eb;
   transform: translateY(-1px);
   box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+/* 프로필 표시 스타일 */
+.profile-display {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.profile-field p {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+  padding: 12px 16px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+/* 폼 버튼 그룹 */
+.form-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.form-buttons .cancel-btn {
+  flex: 1;
+  padding: 12px 24px;
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-buttons .cancel-btn:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.form-buttons .update-btn {
+  flex: 1;
+  margin: 0;
 }
 
 /* 활동 목록 */

@@ -19,6 +19,7 @@ const Navigation = () => {
     showSuccess,
     showError
   } = useLoading();
+
   
   // API URL을 환경에 따라 동적으로 설정 (네트워크 테스트용)
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -135,6 +136,8 @@ const Navigation = () => {
       fileInputRef.current.click();
     }
   };
+
+
 
   return (
     <nav className="navigation">

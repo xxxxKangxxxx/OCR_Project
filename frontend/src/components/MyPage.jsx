@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUserInfo, useCardStats } from '../utils/useLocalStorage';
+import { useCardStats } from '../utils/useLocalStorage';
+import { useAuth } from '../contexts/AuthContext';
 import './MyPage.css';
 
 const MyPage = () => {
   const navigate = useNavigate();
-  const { userInfo, saveUserInfo, loading: userLoading } = useUserInfo();
+  const { user, logout } = useAuth();
   const { stats, refreshStats } = useCardStats();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     name: '',
@@ -20,16 +22,14 @@ const MyPage = () => {
   });
 
   useEffect(() => {
-    if (!userLoading && userInfo && (!userInfo.name || !userInfo.email)) {
-      setIsEditing(true);
-    }
-    if (userInfo) {
+    // 사용자 정보가 있으면 폼에 설정 (편집 모드 강제하지 않음)
+    if (user) {
       setEditForm({
-        name: userInfo.name || '',
-        email: userInfo.email || ''
+        name: user.full_name || user.username || '',
+        email: user.email || ''
       });
     }
-  }, [userInfo, userLoading]);
+  }, [user]);
 
   // 다크모드 설정 적용
   useEffect(() => {
@@ -38,10 +38,10 @@ const MyPage = () => {
   }, [darkMode]);
 
   const handleEditClick = () => {
-    if (userInfo) {
+    if (user) {
       setEditForm({
-        name: userInfo.name || '',
-        email: userInfo.email || ''
+        name: user.full_name || user.username || '',
+        email: user.email || ''
       });
       setIsEditing(true);
     }
@@ -49,14 +49,10 @@ const MyPage = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (saveUserInfo({
-      ...userInfo,
-      ...editForm,
-      updatedAt: new Date().toISOString()
-    })) {
-      setIsEditing(false);
-      refreshStats();
-    }
+    // TODO: 백엔드에 사용자 정보 업데이트 API 구현 필요
+    // 현재는 편집 모드만 종료
+    alert('사용자 정보 업데이트 기능은 준비 중입니다.');
+    setIsEditing(false);
   };
 
   const handleChange = (e) => {
@@ -79,18 +75,24 @@ const MyPage = () => {
     setDarkMode(!darkMode);
   };
 
-  if (userLoading) {
-    return (
-      <div className="mypage">
-        <div className="loading">로딩 중...</div>
-      </div>
-    );
-  }
+  const handleLogout = () => {
+    setShowLogoutConfirm(true);
+  };
 
-  if (!userInfo) {
+  const confirmLogout = () => {
+    logout();
+    setShowLogoutConfirm(false);
+    navigate('/login');
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false);
+  };
+
+  if (!user) {
     return (
       <div className="mypage">
-        <div className="error">사용자 정보를 불러올 수 없습니다.</div>
+        <div className="loading">사용자 정보를 불러오는 중...</div>
       </div>
     );
   }
@@ -108,9 +110,14 @@ const MyPage = () => {
             </div>
           </div>
           <div className="user-info-compact">
-            <h1 className="user-name-compact">{userInfo.name || '이름 없음'}</h1>
-            <p className="user-email-compact">{userInfo.email || '이메일 없음'}</p>
-            <p className="join-date-compact">가입일: {new Date(userInfo.createdAt || Date.now()).toLocaleDateString()}</p>
+            <h1 className="user-name-compact">{user?.full_name || user?.username || '이름 없음'}</h1>
+            <p className="user-email-compact">{user?.email || '이메일 없음'}</p>
+            <p className="join-date-compact">가입일: {new Date(user?.created_at || Date.now()).toLocaleDateString()}</p>
+          </div>
+          <div className="profile-actions">
+            <button className="logout-btn" onClick={handleLogout}>
+              <span>로그아웃</span>
+            </button>
           </div>
         </div>
         
@@ -220,12 +227,33 @@ const MyPage = () => {
                     required
                   />
                 </div>
-                <button type="submit" className="update-btn">저장</button>
+                <div className="form-buttons">
+                  <button type="button" className="cancel-btn" onClick={() => setIsEditing(false)}>취소</button>
+                  <button type="submit" className="update-btn">저장</button>
+                </div>
               </form>
             ) : (
-              <button className="update-btn" onClick={handleEditClick}>
-                프로필 수정
-              </button>
+              <div className="profile-display">
+                <div className="profile-field">
+                  <label>사용자명</label>
+                  <p>{user?.username || '설정되지 않음'}</p>
+                </div>
+                <div className="profile-field">
+                  <label>이름</label>
+                  <p>{user?.full_name || '설정되지 않음'}</p>
+                </div>
+                <div className="profile-field">
+                  <label>이메일</label>
+                  <p>{user?.email || '설정되지 않음'}</p>
+                </div>
+                <div className="profile-field">
+                  <label>가입일</label>
+                  <p>{new Date(user?.created_at || Date.now()).toLocaleDateString()}</p>
+                </div>
+                <button className="update-btn" onClick={handleEditClick}>
+                  프로필 수정
+                </button>
+              </div>
             )}
           </div>
         )}
@@ -292,6 +320,20 @@ const MyPage = () => {
           </div>
         )}
       </div>
+
+      {/* 로그아웃 확인 모달 */}
+      {showLogoutConfirm && (
+        <div className="logout-modal-overlay">
+          <div className="logout-modal">
+            <h3>로그아웃</h3>
+            <p>정말로 로그아웃하시겠습니까?</p>
+            <div className="logout-modal-buttons">
+              <button onClick={cancelLogout} className="cancel-btn">취소</button>
+              <button onClick={confirmLogout} className="confirm-btn">로그아웃</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

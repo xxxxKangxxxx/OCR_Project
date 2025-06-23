@@ -19,7 +19,7 @@ export default defineConfig({
     port: 5174,       // 현재 사용 중인 포트
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'http://192.168.45.85:8000',
+        target: process.env.VITE_API_URL || 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
         configure: (proxy, _options) => {
