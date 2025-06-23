@@ -90,7 +90,7 @@ const Register = () => {
 
         <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
-            <label htmlFor="username">사용자명 *</label>
+            <label htmlFor="username">ID *</label>
             <input
               type="text"
               id="username"

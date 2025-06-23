@@ -369,8 +369,12 @@ async def process_ocr_and_save(
         if not os.path.exists(UPLOAD_FOLDER):
             os.makedirs(UPLOAD_FOLDER)
 
-        # 파일 저장
-        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        # 고유한 파일명 생성 (사용자별 + 타임스탬프)
+        import uuid
+        file_extension = os.path.splitext(file.filename)[1]
+        unique_filename = f"{current_user.username}_{uuid.uuid4().hex[:8]}_{int(datetime.utcnow().timestamp())}{file_extension}"
+        file_path = os.path.join(UPLOAD_FOLDER, unique_filename)
+        
         try:
             with open(file_path, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
@@ -403,6 +407,9 @@ async def process_ocr_and_save(
                 "postal_code": parsed_result.get('postal_code'),
                 "ocr_raw_text": parsed_result.get('ocr_raw_text'),
                 "ocr_confidence": None,
+                "original_filename": file.filename,
+                "stored_filename": unique_filename,
+                "file_path": file_path,
                 "isFavorite": False,
                 "created_at": now,
                 "updated_at": now
@@ -433,14 +440,15 @@ async def process_ocr_and_save(
             logger.error(f"❌ OCR 처리 오류 {file.filename}: {str(e)}", exc_info=True)
             return OCRResult(text=[], error=f"OCR 처리 중 오류가 발생했습니다: {str(e)}")
             
-        finally:
-            # 임시 파일 삭제
+        except Exception as e:
+            # OCR 처리 실패 시에만 파일 삭제
             try:
                 if os.path.exists(file_path):
                     os.remove(file_path)
-                    logger.info(f"🗑 임시 파일 삭제: {file_path}")
-            except Exception as e:
-                logger.error(f"임시 파일 삭제 오류 {file_path}: {str(e)}")
+                    logger.info(f"🗑 실패한 파일 삭제: {file_path}")
+            except Exception as cleanup_error:
+                logger.error(f"파일 삭제 오류 {file_path}: {str(cleanup_error)}")
+            raise e
                 
     except Exception as e:
         logger.error(f"❌ OCR 엔드포인트 오류: {str(e)}", exc_info=True)

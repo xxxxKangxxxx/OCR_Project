@@ -50,19 +50,19 @@ const Login = () => {
         <div className="login-header">
           <img src="/Cardlet_Logo_favicon.png" alt="Cardlet" className="login-logo" />
           <h1>Cardlet</h1>
-          <p>AI 기반 명함 스캔 서비스</p>
+          <p>AI 기반 명함 스캔/관리 서비스</p>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="username">사용자명 또는 이메일</label>
+            <label htmlFor="username">ID 또는 이메일</label>
             <input
               type="text"
               id="username"
               name="username"
               value={formData.username}
               onChange={handleChange}
-              placeholder="사용자명 또는 이메일을 입력하세요"
+              placeholder="ID 또는 이메일을 입력하세요"
               required
               disabled={loading}
             />

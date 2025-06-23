@@ -16,12 +16,15 @@ const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('access_token'));
 
   // API 호출을 위한 헤더 생성
-  const getAuthHeaders = () => {
-    if (!token) return {};
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    };
+  const getAuthHeaders = (includeContentType = true) => {
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    if (includeContentType) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return headers;
   };
 
   // 토큰 유효성 검증 및 사용자 정보 로드
@@ -33,7 +36,7 @@ const AuthProvider = ({ children }) => {
 
     try {
       const response = await fetch('/api/auth/me', {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(true)
       });
 
       if (response.ok) {
@@ -139,10 +142,13 @@ const AuthProvider = ({ children }) => {
 
   // API 요청 헬퍼 함수
   const apiRequest = async (url, options = {}) => {
+    // FormData인지 확인
+    const isFormData = options.body instanceof FormData;
+    
     const config = {
       ...options,
       headers: {
-        ...getAuthHeaders(),
+        ...getAuthHeaders(!isFormData), // FormData일 때는 Content-Type 헤더 제외
         ...options.headers
       }
     };
@@ -156,6 +162,12 @@ const AuthProvider = ({ children }) => {
         throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
       }
 
+      // 응답이 JSON인지 확인 후 파싱
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        return await response.json();
+      }
+      
       return response;
     } catch (error) {
       throw error;

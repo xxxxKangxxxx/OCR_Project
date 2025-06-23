@@ -47,7 +47,7 @@ class User(UserBase):
     created_at: datetime
     updated_at: datetime
 
-# 명함 모델 (기존 로컬스토리지 구조 유지)
+# 명함 모델 (기존 로컬스토리지 구조 유지 + 파일 저장 기능 추가)
 class BusinessCardBase(BaseModel):
     name: Optional[str] = None
     name_en: Optional[str] = None
@@ -62,6 +62,9 @@ class BusinessCardBase(BaseModel):
     postal_code: Optional[str] = None
     ocr_raw_text: Optional[str] = None
     ocr_confidence: Optional[float] = None
+    original_filename: Optional[str] = None
+    stored_filename: Optional[str] = None
+    file_path: Optional[str] = None
     isFavorite: bool = False
 
 class BusinessCardCreate(BusinessCardBase):

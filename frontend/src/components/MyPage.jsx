@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCardStats } from '../utils/useLocalStorage';
+import { useCardStatsAPI } from '../hooks/useBusinessCardsAPI';
 import { useAuth } from '../contexts/AuthContext';
 import './MyPage.css';
 
 const MyPage = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { stats, refreshStats } = useCardStats();
+  const { stats, refreshStats } = useCardStatsAPI();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -28,6 +28,8 @@ const MyPage = () => {
         name: user.full_name || user.username || '',
         email: user.email || ''
       });
+      // 마이페이지 로드 시 최신 통계 새로고침
+      refreshStats();
     }
   }, [user]);
 
@@ -311,8 +313,10 @@ const MyPage = () => {
                     </svg>
                   </div>
                   <div className="activity-content">
-                    <p className="activity-text">새로운 명함을 스캔했습니다.</p>
-                    <p className="activity-time">{new Date(scan.createdAt).toLocaleString()}</p>
+                    <p className="activity-text">
+                      {scan.name ? `${scan.name}님의 명함을 스캔했습니다.` : '새로운 명함을 스캔했습니다.'}
+                    </p>
+                    <p className="activity-time">{new Date(scan.created_at || scan.createdAt).toLocaleString()}</p>
                   </div>
                 </div>
               ))}

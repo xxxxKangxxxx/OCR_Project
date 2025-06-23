@@ -4,7 +4,7 @@ import DatePicker from 'react-datepicker';
 import { ko } from 'date-fns/locale';
 import "react-datepicker/dist/react-datepicker.css";
 import CardGroup from './CardGroup';
-import { useBusinessCards } from '../utils/useLocalStorage.js';
+import { useBusinessCardsAPI } from '../hooks/useBusinessCardsAPI.js';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -23,8 +23,8 @@ const HomePage = () => {
   });
   const dropdownRef = useRef(null);
   
-  // 로컬스토리지에서 실제 명함 데이터 가져오기
-  const { cards } = useBusinessCards();
+  // MongoDB API에서 실제 명함 데이터 가져오기
+  const { cards, loading } = useBusinessCardsAPI();
 
   // 컴포넌트 마운트 시 스크롤 초기화
   useEffect(() => {
@@ -115,8 +115,16 @@ const HomePage = () => {
     navigate(`?${newSearchParams.toString()}`, { replace: true });
   };
 
-  // 로컬스토리지의 실제 데이터를 그룹화
+  // MongoDB API의 실제 데이터를 그룹화
   const cardGroups = useMemo(() => {
+    if (loading) {
+      return [{
+        id: 'loading',
+        title: '명함 데이터를 불러오는 중...',
+        cards: []
+      }];
+    }
+    
     if (!cards || cards.length === 0) {
       return [{
         id: 'empty',
@@ -173,7 +181,7 @@ const HomePage = () => {
       title: '전체 명함',
       cards: cards
     }];
-  }, [cards, groupBy, selectedDate]);
+  }, [cards, groupBy, selectedDate, loading]);
 
   const handleDateChange = (date) => {
     setSelectedDate(date);

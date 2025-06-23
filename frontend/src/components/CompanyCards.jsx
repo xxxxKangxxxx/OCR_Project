@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useBusinessCards } from '../utils/useLocalStorage';
+import { useBusinessCardsAPI } from '../hooks/useBusinessCardsAPI';
 import './CompanyCards.css';
 
 // 모달 컴포넌트
@@ -274,7 +274,7 @@ const BusinessCard = ({ card, onEdit }) => {
 const CompanyCards = () => {
   const { companyName } = useParams();
   const navigate = useNavigate();
-  const { cards, updateCard } = useBusinessCards();
+  const { cards, updateCard } = useBusinessCardsAPI();
   const [selectedCard, setSelectedCard] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -292,8 +292,8 @@ const CompanyCards = () => {
     setIsModalOpen(true);
   };
 
-  const handleSaveCard = (editedCard) => {
-    const success = updateCard(editedCard.id, editedCard);
+  const handleSaveCard = async (editedCard) => {
+    const success = await updateCard(editedCard.id, editedCard);
     if (success) {
       alert('명함이 수정되었습니다.');
       setIsModalOpen(false);

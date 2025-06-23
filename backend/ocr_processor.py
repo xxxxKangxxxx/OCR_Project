@@ -10,6 +10,17 @@ import io
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+# 외부 라이브러리 경고 메시지 줄이기
+logging.getLogger("passlib").setLevel(logging.ERROR)
+
+# HEIF 지원을 위한 pillow-heif 등록
+try:
+    from pillow_heif import register_heif_opener
+    register_heif_opener()
+    logger.info("HEIF support enabled")
+except ImportError:
+    logger.warning("pillow-heif not installed, HEIF files will not be supported")
+
 class OCRProcessor:
     def __init__(self, upload_folder: str):
         logger.info("Initializing OCR Processor")
@@ -29,6 +40,9 @@ class OCRProcessor:
         """이미지 파일 유효성 검사"""
         try:
             with Image.open(image_path) as img:
+                # HEIF 파일의 경우 특별 처리
+                if img.format in ['HEIF', 'HEIC']:
+                    logger.info(f"HEIF/HEIC file detected: {image_path}")
                 img.verify()
             return True
         except Exception as e:
@@ -125,8 +139,14 @@ class OCRProcessor:
         try:
             # PIL로 이미지 열기
             with Image.open(image_path) as pil_img:
+                # HEIF/HEIC 파일의 경우 로그 출력
+                if pil_img.format in ['HEIF', 'HEIC']:
+                    logger.info(f"Processing HEIF/HEIC file: {image_path}")
+                
                 # RGBA인 경우 RGB로 변환
                 if pil_img.mode == 'RGBA':
+                    pil_img = pil_img.convert('RGB')
+                elif pil_img.mode not in ['RGB', 'L']:  # HEIF의 경우 다양한 모드 가능
                     pil_img = pil_img.convert('RGB')
                 
                 # 이미지가 너무 큰 경우 리사이징
@@ -241,7 +261,7 @@ class OCRProcessor:
     @staticmethod
     def allowed_file(filename: str) -> bool:
         """허용된 파일 확장자 검사"""
-        ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg'}
+        ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'heic', 'heif'}
         is_allowed = '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
         logger.info(f"File extension check for {filename}: {'allowed' if is_allowed else 'not allowed'}")
         return is_allowed 

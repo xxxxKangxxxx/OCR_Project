@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useBusinessCards } from '../utils/useLocalStorage.js';
+// import { useBusinessCards } from '../utils/useLocalStorage.js'; // 더 이상 사용하지 않음
 import { useLoading } from '../contexts/LoadingContext';
+import { useAuth } from '../contexts/AuthContext';
 import './Navigation.css';
 import { API_ENDPOINTS } from '../utils/config';
 
@@ -9,7 +10,8 @@ const Navigation = () => {
   const fileInputRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const { saveCard, refreshCards } = useBusinessCards();
+  // const { saveCard, refreshCards } = useBusinessCards(); // 더 이상 사용하지 않음
+  const { apiRequest } = useAuth();
   const { 
     isUploading, 
     setIsUploading, 
@@ -57,69 +59,88 @@ const Navigation = () => {
     try {
       console.log('🌐 API 요청 시작');
       
-      // 진행 상태를 더 부드럽게 시뮬레이션
-      let currentProgress = 0;
-      const progressTimer = setInterval(() => {
-        if (currentProgress <= 100) {
-          const remainingProgress = 100 - currentProgress;
-          const increment = Math.max(0.5, remainingProgress * 0.01);
-          currentProgress += increment;
-          setUploadProgress(currentProgress);
-        } else {
-          clearInterval(progressTimer);
-        }
-      }, 50);
-
-      const response = await fetch(`${API_URL}/api/upload`, {
-        method: 'POST',
-        body: formData
-      });
-
-      clearInterval(progressTimer);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const results = await response.json();
-      console.log('📥 API 응답 받음:', results);
-
-      if (Array.isArray(results)) {
-        const hasError = results.some(result => result.error);
-        if (hasError) {
-          const errorMessages = results
-            .filter(result => result.error)
-            .map(result => `${result.filename}: ${result.error}`)
-            .join('\n');
-          showError(errorMessages);
-        } else {
-          // 성공한 결과들을 로컬스토리지에 저장
-          let savedCount = 0;
-          results.forEach(result => {
-            if (result.parsed && !result.error) {
-              try {
-                const cardData = {
-                  ...result.parsed,
-                  original_filename: result.filename,
-                  company_name: null
-                };
-                
-                console.log('Saving card data:', cardData);
-                const success = saveCard(cardData);
-                if (success) {
-                  savedCount++;
-                }
-              } catch (error) {
-                console.error('명함 데이터 저장 오류:', error);
-              }
+      // JWT 인증이 포함된 API 호출 (각 파일별로 처리)
+      let successCount = 0;
+      let errorMessages = [];
+      let processedFiles = 0;
+      const totalFiles = files.length;
+      
+      for (let fileIndex = 0; fileIndex < files.length; fileIndex++) {
+        const file = files[fileIndex];
+        
+        try {
+          console.log(`🔄 ${file.name} 처리 시작...`);
+          
+          // 현재 파일 처리 시작 시 진행률 계산
+          const baseProgress = Math.floor((fileIndex / totalFiles) * 90);
+          const nextProgress = Math.floor(((fileIndex + 1) / totalFiles) * 90);
+          const progressRange = nextProgress - baseProgress;
+          
+          // OCR 처리 중 진행률을 천천히 증가시키는 타이머
+          let currentFileProgress = 0;
+          const fileProgressTimer = setInterval(() => {
+            if (currentFileProgress < progressRange * 0.8) { // 80%까지만 채움
+              currentFileProgress += Math.max(1, progressRange * 0.02);
+              const totalProgress = baseProgress + Math.floor(currentFileProgress);
+              setUploadProgress(Math.min(totalProgress, nextProgress - 2));
             }
+          }, 200);
+          
+          const fileFormData = new FormData();
+          fileFormData.append('files', file);
+          
+          const result = await apiRequest('/api/cards/ocr', {
+            method: 'POST',
+            body: fileFormData
           });
 
-          // 프로그레스바를 100%로 설정하고 성공 상태로 변경
-          setUploadProgress(100);
-          showSuccess(results.length, savedCount);
-          refreshCards();
+          // OCR 완료 후 타이머 정리 및 진행률 완료
+          clearInterval(fileProgressTimer);
+          
+          if (result.error) {
+            errorMessages.push(`${file.name}: ${result.error}`);
+          } else {
+            successCount++;
+            console.log(`✅ ${file.name} 처리 완료:`, result);
+          }
+          
+          // 현재 파일 처리 완료 - 진행률을 해당 구간의 끝까지 채움
+          processedFiles++;
+          setUploadProgress(nextProgress);
+          
+        } catch (error) {
+          console.error(`❌ ${file.name} 처리 실패:`, error);
+          errorMessages.push(`${file.name}: ${error.message}`);
+          processedFiles++;
+          const progress = Math.floor(((fileIndex + 1) / totalFiles) * 90);
+          setUploadProgress(progress);
         }
+      }
+
+      // 모든 파일 처리 완료 후 100%까지 자연스럽게 채우기
+      const finalProgress = () => {
+        return new Promise((resolve) => {
+          let currentProgress = Math.floor((processedFiles / totalFiles) * 90);
+          const finalTimer = setInterval(() => {
+            if (currentProgress < 100) {
+              currentProgress += 2;
+              setUploadProgress(Math.min(currentProgress, 100));
+            } else {
+              clearInterval(finalTimer);
+              resolve();
+            }
+          }, 50);
+        });
+      };
+
+      // 100% 완료 후 결과 메시지 표시
+      await finalProgress();
+      
+      if (errorMessages.length > 0) {
+        showError(errorMessages.join('\n'));
+      } else {
+        showSuccess(files.length, successCount);
+        // MongoDB에 저장되므로 페이지 새로고침으로 최신 데이터 표시
       }
     } catch (error) {
       console.error('❌ API 요청 실패:', error);
@@ -169,6 +190,6 @@ const Navigation = () => {
       </Link>
     </nav>
   );
-};
+  };
 
 export default Navigation; 
