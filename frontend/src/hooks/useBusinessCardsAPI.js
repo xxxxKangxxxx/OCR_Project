@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../utils/api';
 
 // MongoDB API를 사용하는 명함 데이터 관리 훅
 export function useBusinessCardsAPI() {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { apiRequest, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   // 데이터 로드
   const loadCards = async () => {
@@ -17,12 +18,12 @@ export function useBusinessCardsAPI() {
 
     try {
       setLoading(true);
-      const response = await apiRequest('/api/cards/');
-      if (Array.isArray(response)) {
-        setCards(response);
-        console.log('📋 명함 데이터 로드 완료:', response.length, '개');
+      const { data } = await api.get('/api/cards/');
+      if (Array.isArray(data)) {
+        setCards(data);
+        console.log('📋 명함 데이터 로드 완료:', data.length, '개');
       } else {
-        console.error('❌ 잘못된 응답 형식:', response);
+        console.error('❌ 잘못된 응답 형식:', data);
         setCards([]);
       }
     } catch (error) {
@@ -41,12 +42,9 @@ export function useBusinessCardsAPI() {
   // 명함 저장 (API 호출)
   const saveCard = async (cardData) => {
     try {
-      const response = await apiRequest('/api/cards/', {
-        method: 'POST',
-        body: JSON.stringify(cardData)
-      });
+      const { data } = await api.post('/api/cards/', cardData);
       
-      if (response && response.id) {
+      if (data && data.id) {
         await loadCards(); // 데이터 새로고침
         return true;
       }
@@ -60,9 +58,7 @@ export function useBusinessCardsAPI() {
   // 명함 삭제
   const deleteCard = async (id) => {
     try {
-      await apiRequest(`/api/cards/${id}`, {
-        method: 'DELETE'
-      });
+      await api.delete(`/api/cards/${id}`);
       await loadCards(); // 데이터 새로고침
       return true;
     } catch (error) {
@@ -74,12 +70,9 @@ export function useBusinessCardsAPI() {
   // 명함 업데이트
   const updateCard = async (id, updatedData) => {
     try {
-      const response = await apiRequest(`/api/cards/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(updatedData)
-      });
+      const { data } = await api.put(`/api/cards/${id}`, updatedData);
       
-      if (response && response.id) {
+      if (data && data.id) {
         await loadCards(); // 데이터 새로고침
         return true;
       }
@@ -93,9 +86,7 @@ export function useBusinessCardsAPI() {
   // 즐겨찾기 토글
   const toggleFavorite = async (cardId) => {
     try {
-      await apiRequest(`/api/cards/${cardId}/favorite`, {
-        method: 'POST'
-      });
+      await api.post(`/api/cards/${cardId}/favorite`);
       await loadCards(); // 데이터 새로고침
       return true;
     } catch (error) {
@@ -107,8 +98,8 @@ export function useBusinessCardsAPI() {
   // 즐겨찾기 목록 조회
   const getFavorites = async () => {
     try {
-      const response = await apiRequest('/api/cards/favorites/list');
-      return Array.isArray(response) ? response : [];
+      const { data } = await api.get('/api/cards/favorites/list');
+      return Array.isArray(data) ? data : [];
     } catch (error) {
       console.error('❌ 즐겨찾기 조회 실패:', error);
       return [];
@@ -120,8 +111,8 @@ export function useBusinessCardsAPI() {
     if (!query.trim()) return [];
     
     try {
-      const response = await apiRequest(`/api/cards/search/${encodeURIComponent(query)}`);
-      return Array.isArray(response) ? response : [];
+      const { data } = await api.get(`/api/cards/search/${encodeURIComponent(query)}`);
+      return Array.isArray(data) ? data : [];
     } catch (error) {
       console.error('❌ 명함 검색 실패:', error);
       return [];
@@ -146,7 +137,6 @@ export function useSearchAPI() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const { apiRequest } = useAuth();
 
   // 검색 실행
   const performSearch = async (query) => {
@@ -159,8 +149,8 @@ export function useSearchAPI() {
         return;
       }
 
-      const results = await apiRequest(`/api/cards/search/${encodeURIComponent(query)}`);
-      setSearchResults(Array.isArray(results) ? results : []);
+      const { data } = await api.get(`/api/cards/search/${encodeURIComponent(query)}`);
+      setSearchResults(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('❌ 검색 실패:', error);
       setSearchResults([]);
@@ -193,14 +183,14 @@ export function useCardStatsAPI() {
     favoriteCards: 0,
     recentScans: []
   });
-  const { apiRequest, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const refreshStats = async () => {
     if (!isAuthenticated) return;
     
     try {
       // 모든 명함 가져와서 통계 계산
-      const cards = await apiRequest('/api/cards/');
+      const { data: cards } = await api.get('/api/cards/');
       if (Array.isArray(cards)) {
         const companies = new Set(cards.map(card => card.company_name || '').filter(Boolean)).size;
         const recentScans = cards

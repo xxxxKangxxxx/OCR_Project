@@ -1,0 +1,3 @@
+# This file ensures that the uploads directory is preserved in Git
+# even when it's empty. The uploads directory is needed for
+# temporary file storage during OCR processing. 

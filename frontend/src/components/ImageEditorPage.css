@@ -1,0 +1,551 @@
+.image-editor-page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+  overflow: hidden;
+}
+
+.image-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #007bff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.back-btn:hover {
+  background: #e7f3ff;
+}
+
+.image-editor-header h1 {
+  margin: 0;
+  color: #333;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.progress-indicator {
+  background: #007bff;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.image-editor-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.image-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  background: #f8f9fa;
+  overflow: hidden;
+  min-height: 0; /* flexbox에서 오버플로우 방지 */
+}
+
+.edit-canvas {
+  max-width: calc(100% - 48px);
+  max-height: calc(100% - 48px);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  cursor: default;
+  background: white;
+  transition: cursor 0.1s ease;
+}
+
+.edit-canvas.crop-mode {
+  cursor: crosshair;
+}
+
+/* 필요시에만 선택 방지 */
+.edit-canvas.dragging {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.controls-panel {
+  width: 200px;
+  background: white;
+  border-left: 1px solid #e0e0e0;
+  padding: 20px 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+/* 메인 탭 */
+.main-tabs {
+  display: flex;
+  width: 100%;
+  border-radius: 8px;
+  background: #f5f5f5;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+.main-tab {
+  flex: 1;
+  padding: 8px 16px;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s ease;
+}
+
+.main-tab.active {
+  background: white;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 조절 탭 내용 */
+.adjust-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.adjust-icons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.adjust-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.adjust-icon.active {
+  border-color: #007bff;
+  background: rgba(0, 123, 255, 0.1);
+}
+
+.adjust-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: #666;
+}
+
+.adjust-icon.active svg {
+  fill: #007bff;
+}
+
+.brightness-icon::after {
+  content: '☀';
+  font-size: 18px;
+  color: #666;
+}
+
+.brightness-icon.active::after {
+  color: #007bff;
+}
+
+.contrast-icon::after {
+  content: '◐';
+  font-size: 18px;
+  color: #666;
+}
+
+.contrast-icon.active::after {
+  color: #007bff;
+}
+
+.saturation-icon::after {
+  content: '🎨';
+  font-size: 14px;
+}
+
+.exposure-icon::after {
+  content: '✦';
+  font-size: 16px;
+  color: #666;
+}
+
+.exposure-icon.active::after {
+  color: #007bff;
+}
+
+.slider-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.horizontal-dial-container {
+  position: relative;
+  width: 160px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  user-select: none;
+}
+
+.horizontal-dial-container.dragging {
+  cursor: grabbing;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.horizontal-marks {
+  position: absolute;
+  width: 300px;
+  height: 20px;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.1s ease-out;
+}
+
+.horizontal-mark {
+  width: 1px;
+  height: 8px;
+  background: #ccc;
+  flex-shrink: 0;
+}
+
+.horizontal-mark.major {
+  height: 12px;
+  background: #888;
+}
+
+.horizontal-track {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: #e0e0e0;
+  top: 19px;
+  left: 0;
+  border-radius: 1px;
+}
+
+.horizontal-indicator {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border: 2px solid #007bff;
+  border-radius: 50%;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.2s ease;
+  z-index: 2;
+}
+
+.horizontal-indicator:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.horizontal-indicator:active {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.value-display {
+  color: #333;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 30px;
+  text-align: center;
+}
+
+/* 크롭 탭 내용 */
+.crop-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.crop-instruction {
+  font-size: 11px;
+  color: #666;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  text-align: center;
+  border: 1px solid #e0e0e0;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.crop-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.crop-reset-btn {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid #007bff;
+  background: white;
+  color: #007bff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.crop-reset-btn:hover {
+  background: #007bff;
+  color: white;
+}
+
+
+
+.image-editor-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.skip-btn, .save-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.skip-btn {
+  background: #6c757d;
+  color: white;
+}
+
+.skip-btn:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+
+.save-btn {
+  background: #28a745;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+  .controls-panel {
+    width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .image-editor-page {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  .image-editor-header {
+    padding: 12px 16px;
+  }
+  
+  .image-editor-header h1 {
+    font-size: 18px;
+  }
+  
+  .image-editor-content {
+    flex-direction: column;
+  }
+  
+  .controls-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #e0e0e0;
+    max-height: 40vh;
+    padding: 16px;
+  }
+  
+  .image-container {
+    flex: 1;
+    min-height: 40vh;
+    padding: 16px;
+  }
+  
+  .image-editor-footer {
+    padding: 16px;
+    gap: 12px;
+  }
+  
+  .skip-btn, .save-btn {
+    flex: 1;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-left {
+    gap: 8px;
+  }
+  
+  .back-btn {
+    padding: 6px 8px;
+    font-size: 14px;
+  }
+  
+  .image-editor-header h1 {
+    font-size: 16px;
+  }
+  
+  .progress-indicator {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+  
+  .controls-panel {
+    padding: 12px;
+    gap: 16px;
+  }
+  
+  .control-group {
+    gap: 12px;
+  }
+}
+
+/* 스크롤바 스타일링 */
+.controls-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.controls-panel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.controls-panel::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.controls-panel::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* ReactCrop 관련 스타일 */
+.ReactCrop {
+  display: inline-block;
+  position: relative;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.ReactCrop__image {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+
+.ReactCrop__crop-selection {
+  border: 2px solid #007bff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+.ReactCrop__drag-handle {
+  background: #007bff;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+/* 로딩 상태 */
+.image-editor-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #666;
+  font-size: 18px;
+  background: #f8f9fa;
+} 

@@ -48,13 +48,36 @@ const Navigation = () => {
       return;
     }
 
+    // 이미지 파일만 필터링하고 편집기로 보내기
+    const imageFiles = Array.from(files).filter(file => 
+      file.type.startsWith('image/')
+    );
+    
+    const pdfFiles = Array.from(files).filter(file => 
+      file.type === 'application/pdf'
+    );
+
+    if (imageFiles.length > 0) {
+      // 이미지 파일이 있으면 편집 페이지로 이동
+      navigate('/image-editor', { 
+        state: { 
+          files: imageFiles, 
+          currentIndex: 0 
+        } 
+      });
+      return;
+    }
+
+    // PDF 파일만 있는 경우 바로 업로드
+    if (pdfFiles.length > 0) {
+      await processFiles(pdfFiles);
+    }
+  };
+
+  const processFiles = async (files) => {
     setIsUploading(true);
     setUploadProgress(0);
     setStatus('loading');
-    const formData = new FormData();
-    Array.from(files).forEach(file => {
-      formData.append('files', file);
-    });
 
     try {
       console.log('🌐 API 요청 시작');
@@ -158,8 +181,6 @@ const Navigation = () => {
     }
   };
 
-
-
   return (
     <nav className="navigation">
       <input
@@ -190,6 +211,6 @@ const Navigation = () => {
       </Link>
     </nav>
   );
-  };
+};
 
 export default Navigation; 

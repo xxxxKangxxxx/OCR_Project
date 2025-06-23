@@ -9,7 +9,9 @@ import CardList from './components/CardList';
 import MyPage from './components/MyPage';
 import Login from './components/Login';
 import Register from './components/Register';
+import ImageEditorPage from './components/ImageEditorPage';
 import AuthProvider from './contexts/AuthContext';
+import { LoadingProvider } from './contexts/LoadingContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // 페이지 이동 시 스크롤을 맨 위로 이동시키는 컴포넌트
@@ -17,31 +19,30 @@ function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // 브라우저의 스크롤 복원 기능 활성화 (각 페이지가 독립적이므로)
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'auto';
-    }
-
-    // 간단한 스크롤 초기화 (각 페이지가 독립적이므로 자동으로 초기화됨)
+    // 페이지 전환 시에만 스크롤 초기화 (한 번만)
     const resetScroll = () => {
-      // 윈도우 스크롤 초기화
-      window.scrollTo(0, 0);
+      // Layout content 영역의 스크롤 초기화
+      const layoutContent = document.querySelector('.layout-content');
+      if (layoutContent) {
+        layoutContent.scrollTop = 0;
+      }
       
-      // document 스크롤 초기화
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
+      // 개별 페이지 스크롤 초기화
+      const homepage = document.querySelector('.homepage');
+      const mypage = document.querySelector('.mypage');
+      const companyCards = document.querySelector('.company-cards');
+      
+      if (homepage) homepage.scrollTop = 0;
+      if (mypage) mypage.scrollTop = 0;
+      if (companyCards) companyCards.scrollTop = 0;
       
       console.log(`페이지 전환 완료: ${pathname}`);
     };
 
-    // 즉시 실행
-    resetScroll();
-    
-    // React 렌더링 완료 후 한 번 더 실행
+    // 컴포넌트 마운트 후 한 번만 실행
     setTimeout(resetScroll, 0);
-    setTimeout(resetScroll, 100);
 
-    console.log('독립적 페이지 스크롤 관리:', pathname);
+    console.log('페이지 스크롤 초기화:', pathname);
   }, [pathname]);
 
   return null;
@@ -74,6 +75,13 @@ function AppContent() {
         {/* 인증이 필요 없는 페이지들 - ScrollToTop 적용 안함 */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        
+        {/* 이미지 편집 페이지 - Layout 없이 전체 화면 */}
+        <Route path="/image-editor" element={
+          <ProtectedRoute>
+            <ImageEditorPage />
+          </ProtectedRoute>
+        } />
         
         {/* 인증이 필요한 페이지들 - ScrollToTop 적용 */}
         <Route path="/*" element={
@@ -114,7 +122,9 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppContent />
+        <LoadingProvider>
+          <AppContent />
+        </LoadingProvider>
       </AuthProvider>
     </Router>
   );

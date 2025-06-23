@@ -438,17 +438,14 @@ async def process_ocr_and_save(
             
         except Exception as e:
             logger.error(f"❌ OCR 처리 오류 {file.filename}: {str(e)}", exc_info=True)
-            return OCRResult(text=[], error=f"OCR 처리 중 오류가 발생했습니다: {str(e)}")
-            
-        except Exception as e:
-            # OCR 처리 실패 시에만 파일 삭제
+            # OCR 처리 실패 시 파일 삭제
             try:
                 if os.path.exists(file_path):
                     os.remove(file_path)
                     logger.info(f"🗑 실패한 파일 삭제: {file_path}")
             except Exception as cleanup_error:
                 logger.error(f"파일 삭제 오류 {file_path}: {str(cleanup_error)}")
-            raise e
+            return OCRResult(text=[], error=f"OCR 처리 중 오류가 발생했습니다: {str(e)}")
                 
     except Exception as e:
         logger.error(f"❌ OCR 엔드포인트 오류: {str(e)}", exc_info=True)
