@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useBusinessCardsAPI } from '../hooks/useBusinessCardsAPI';
+import BusinessCard from './BusinessCard';
 import './CompanyCards.css';
 
 // 모달 컴포넌트
@@ -204,77 +205,10 @@ const EditCardModal = ({ card, isOpen, onClose, onSave }) => {
   );
 };
 
-const BusinessCard = ({ card, onEdit }) => {
-  const { toggleFavorite } = useBusinessCards();
-
-  const handleFavoriteClick = () => {
-    toggleFavorite(card.id);
-  };
-
-  return (
-    <div className="business-card">
-      <div className="card-header">
-        <div className="card-main-info">
-          <h2 className="name">{card.name}</h2>
-          <p className="position">{card.position}</p>
-          <p className="department">{card.department}</p>
-        </div>
-        <div className="card-actions">
-          <button
-            className={`action-button favorite-button ${card.isFavorite ? 'active' : ''}`}
-            onClick={handleFavoriteClick}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill={card.isFavorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
-              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
-            </svg>
-          </button>
-          <button
-            className="action-button"
-            onClick={() => onEdit(card)}
-          >
-            <img src="/edit-icon.svg" alt="편집" />
-          </button>
-          <button className="action-button">
-            <img src="/share-icon.svg" alt="공유" />
-          </button>
-        </div>
-      </div>
-      
-      <div className="card-details">
-        {card.email && (
-          <p className="contact-info">
-            <span className="label">이메일:</span> {card.email}
-          </p>
-        )}
-        {card.phone && (
-          <p className="contact-info">
-            <span className="label">전화:</span> {card.phone}
-          </p>
-        )}
-        {card.mobile && (
-          <p className="contact-info">
-            <span className="label">휴대폰:</span> {card.mobile}
-          </p>
-        )}
-        {card.fax && (
-          <p className="contact-info">
-            <span className="label">팩스:</span> {card.fax}
-          </p>
-        )}
-        {card.address && (
-          <p className="contact-info">
-            <span className="label">주소:</span> {card.address}
-          </p>
-        )}
-      </div>
-    </div>
-  );
-};
-
 const CompanyCards = () => {
   const { companyName } = useParams();
   const navigate = useNavigate();
-  const { cards, updateCard } = useBusinessCardsAPI();
+  const { cards, updateCard, refreshCards } = useBusinessCardsAPI();
   const [selectedCard, setSelectedCard] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -312,6 +246,14 @@ const CompanyCards = () => {
     setSelectedCard(null);
   };
 
+  const handleDeleteComplete = async () => {
+    await refreshCards(); // 카드 목록 새로고침
+    if (companyCards.length <= 1) {
+      // 마지막 명함이 삭제되면 홈페이지로 이동
+      navigate('/');
+    }
+  };
+
   return (
     <div className="company-cards">
       <div className="company-header">
@@ -325,7 +267,12 @@ const CompanyCards = () => {
       
       <div className="cards-grid">
         {companyCards.map(card => (
-          <BusinessCard key={card.id} card={card} onEdit={handleEditClick} />
+          <BusinessCard 
+            key={card.id} 
+            card={card} 
+            onEdit={handleEditClick}
+            onDelete={handleDeleteComplete}
+          />
         ))}
       </div>
 
