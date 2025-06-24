@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cardlet-ocr
+  labels:
+    name: cardlet-ocr
+    environment: production 

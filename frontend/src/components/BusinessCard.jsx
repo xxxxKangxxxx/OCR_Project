@@ -5,9 +5,16 @@ import './BusinessCard.css';
 const BusinessCard = ({ card, onEdit, onDelete }) => {
   const { toggleFavorite, deleteCard } = useBusinessCardsAPI();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(card.isFavorite);
 
-  const handleFavoriteClick = async () => {
-    await toggleFavorite(card.id);
+  const handleFavoriteClick = async (e) => {
+    e.stopPropagation();
+    try {
+      await toggleFavorite(card.id);
+      setIsFavorite(!isFavorite);
+    } catch (error) {
+      console.error('즐겨찾기 토글 실패:', error);
+    }
   };
 
   const handleDeleteClick = (e) => {
@@ -44,10 +51,10 @@ const BusinessCard = ({ card, onEdit, onDelete }) => {
         </div>
         <div className="card-actions">
           <button
-            className={`action-button favorite-button ${card.isFavorite ? 'active' : ''}`}
+            className={`action-button favorite-button ${isFavorite ? 'active' : ''}`}
             onClick={handleFavoriteClick}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill={card.isFavorite ? "#ffd700" : "none"} stroke="currentColor" strokeWidth="2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill={isFavorite ? "#ffd700" : "none"} stroke="currentColor" strokeWidth="2">
               <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
             </svg>
           </button>
