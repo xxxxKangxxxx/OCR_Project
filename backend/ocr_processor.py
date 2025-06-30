@@ -28,7 +28,7 @@ class OCRProcessor:
         logger.info("Loading EasyOCR model for Korean and English")
         self.reader = easyocr.Reader(
                         lang_list=['ko', 'en'],
-                        gpu=True,
+                        gpu=False,
                         recog_network='korean_g2'
                     )
 

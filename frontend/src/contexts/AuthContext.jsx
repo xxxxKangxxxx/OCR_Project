@@ -15,6 +15,7 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('access_token'));
+  const [isUploadingCards, setIsUploadingCards] = useState(false);
 
   // 토큰 유효성 검증 및 사용자 정보 로드
   const loadUser = async () => {
@@ -28,7 +29,10 @@ const AuthProvider = ({ children }) => {
       setUser(data);
     } catch (error) {
       console.error('사용자 정보 로드 실패:', error);
-      logout();
+      // 명함 업로드 중이 아닐 때만 로그아웃
+      if (!isUploadingCards) {
+        logout();
+      }
     } finally {
       setLoading(false);
     }
@@ -104,6 +108,12 @@ const AuthProvider = ({ children }) => {
   // API 요청 헬퍼 함수 - 훨씬 간단해짐!
   const apiRequest = async (url, options = {}) => {
     try {
+      // 명함 업로드 요청인지 확인
+      const isCardUpload = url.includes('/api/cards/ocr');
+      if (isCardUpload) {
+        setIsUploadingCards(true);
+      }
+
       // FormData인지 확인
       const isFormData = options.body instanceof FormData;
       
@@ -128,20 +138,28 @@ const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       throw error;
+    } finally {
+      // 명함 업로드 완료 시 상태 초기화
+      if (url.includes('/api/cards/ocr')) {
+        setIsUploadingCards(false);
+      }
     }
   };
 
   // 401 에러 이벤트 리스너
   useEffect(() => {
     const handleUnauthorized = () => {
-      logout();
+      // 명함 업로드 중이 아닐 때만 로그아웃
+      if (!isUploadingCards) {
+        logout();
+      }
     };
 
     window.addEventListener('unauthorized', handleUnauthorized);
     return () => {
       window.removeEventListener('unauthorized', handleUnauthorized);
     };
-  }, []);
+  }, [isUploadingCards]);
 
   // 컴포넌트 마운트 시 사용자 정보 로드
   useEffect(() => {
@@ -163,7 +181,9 @@ const AuthProvider = ({ children }) => {
     register,
     logout,
     apiRequest,
-    isAuthenticated: !!user && !!token
+    isAuthenticated: !!user && !!token,
+    isUploadingCards,
+    setIsUploadingCards
   };
 
   return (

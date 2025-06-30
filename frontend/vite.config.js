@@ -17,7 +17,8 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',  // 모든 IP에서 접근 가능
     port: 5174,       // 현재 사용 중인 포트
-    proxy: {
+    // 개발 환경에서만 프록시 사용 (프로덕션에서는 nginx가 처리)
+    proxy: process.env.NODE_ENV !== 'production' ? {
       '/api': {
         target: process.env.VITE_API_URL || 'http://localhost:8000',
         changeOrigin: true,
@@ -34,6 +35,6 @@ export default defineConfig({
           });
         },
       }
-    }
+    } : {}
   }
 })

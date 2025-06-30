@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # MongoDB 데이터베이스
   mongodb:
     image: mongo:7.0
     container_name: cardlet-mongodb
@@ -17,20 +16,17 @@ services:
     networks:
       - cardlet-network
 
-  # 백엔드 서비스
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
+    image: kang0719/ocr-backend:v7  # ← 변경됨!
     container_name: cardlet-backend
     restart: unless-stopped
     environment:
-      - SECRET_KEY=your-super-secret-jwt-key-change-this-in-production
-      - MONGODB_URL=mongodb://admin:password123@mongodb:27017/cardlet_db?authSource=admin
-      - DATABASE_NAME=cardlet_db
+      - SECRET_KEY=E261SKHCeBfNDVD7Ij03ID3gdmLVjm0v2CVf3hIdHELn0fLiqLqFiBtqB8CN6l2NiHLcowZN4mt
       - ALGORITHM=HS256
       - ACCESS_TOKEN_EXPIRE_MINUTES=30
-      - DEBUG=true
+      - MONGODB_URL=mongodb://admin:password123@mongodb:27017/cardlet_db?authSource=admin
+      - DATABASE_NAME=cardlet_db
+      - DEBUG=True
     ports:
       - "8000:8000"
     volumes:
@@ -39,12 +35,15 @@ services:
       - mongodb
     networks:
       - cardlet-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://210.109.82.112:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
-  # 프론트엔드 서비스
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend
+    image: kang0719/ocr-frontend:v13  # ← 새로 빌드된 이미지
     container_name: cardlet-frontend
     restart: unless-stopped
     ports:
@@ -59,4 +58,4 @@ volumes:
 
 networks:
   cardlet-network:
-    driver: bridge 
+    driver: bridge

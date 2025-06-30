@@ -22,10 +22,6 @@ const Navigation = () => {
     showError
   } = useLoading();
 
-  
-  // API URL을 환경에 따라 동적으로 설정 (네트워크 테스트용)
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
   // 업로드 완료 후 처리를 위한 useEffect
   useEffect(() => {
     if (uploadProgress === 100) {
@@ -133,7 +129,10 @@ const Navigation = () => {
           
         } catch (error) {
           console.error(`❌ ${file.name} 처리 실패:`, error);
-          errorMessages.push(`${file.name}: ${error.message}`);
+          // 인증 오류가 아닌 경우에만 에러 메시지 추가
+          if (error.response?.status !== 401) {
+            errorMessages.push(`${file.name}: ${error.message || '처리 중 오류가 발생했습니다'}`);
+          }
           processedFiles++;
           const progress = Math.floor(((fileIndex + 1) / totalFiles) * 90);
           setUploadProgress(progress);
@@ -161,6 +160,12 @@ const Navigation = () => {
       
       if (errorMessages.length > 0) {
         showError(errorMessages.join('\n'));
+        // 오류 발생 시 Home 페이지로 이동
+        setTimeout(() => {
+          if (location.pathname !== '/') {
+            navigate('/');
+          }
+        }, 2000);
       } else {
         showSuccess(files.length, successCount);
         // MongoDB에 저장되므로 페이지 새로고침으로 최신 데이터 표시
@@ -168,6 +173,12 @@ const Navigation = () => {
     } catch (error) {
       console.error('❌ API 요청 실패:', error);
       showError('명함 처리 중 오류가 발생했습니다.');
+      // 오류 발생 시 Home 페이지로 이동
+      setTimeout(() => {
+        if (location.pathname !== '/') {
+          navigate('/');
+        }
+      }, 2000);
     } finally {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';

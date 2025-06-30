@@ -193,7 +193,10 @@ const ImageEditorPage = () => {
           
         } catch (error) {
           console.error(`❌ ${file.name} 처리 실패:`, error);
-          errorMessages.push(`${file.name}: ${error.message}`);
+          // 인증 오류가 아닌 경우에만 에러 메시지 추가
+          if (error.response?.status !== 401) {
+            errorMessages.push(`${file.name}: ${error.message || '처리 중 오류가 발생했습니다'}`);
+          }
           processedFiles++;
           const progress = Math.floor(((fileIndex + 1) / totalFiles) * 90);
           setUploadProgress(progress);
@@ -220,12 +223,20 @@ const ImageEditorPage = () => {
       
       if (errorMessages.length > 0) {
         showError(errorMessages.join('\n'));
+        // 오류 발생 시 Home 페이지로 이동
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
       } else {
         showSuccess(files.length, successCount);
       }
     } catch (error) {
       console.error('❌ API 요청 실패:', error);
       showError('명함 처리 중 오류가 발생했습니다.');
+      // 오류 발생 시 Home 페이지로 이동
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
     }
   };
 
@@ -303,7 +314,25 @@ const ImageEditorPage = () => {
   };
 
   if (!currentFile) {
-    return <div>Loading...</div>;
+    return (
+      <div className="image-editor-page">
+        <div className="image-editor-header">
+          <div className="header-left">
+            <button className="back-btn" onClick={() => navigate('/')}>
+              ← 뒤로
+            </button>
+            <h1>이미지 편집</h1>
+          </div>
+        </div>
+        <div className="image-editor-content">
+          <div className="image-container">
+            <div className="loading-placeholder">
+              파일을 불러오는 중...
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -325,36 +354,42 @@ const ImageEditorPage = () => {
       
         <div className="image-editor-content">
           <div className="image-container">
-            <ReactCrop
-              crop={{
-                unit: crop?.unit || '%',
-                x: isNaN(parseFloat(crop?.x)) ? 20 : parseFloat(crop.x),
-                y: isNaN(parseFloat(crop?.y)) ? 20 : parseFloat(crop.y),
-                width: isNaN(parseFloat(crop?.width)) ? 60 : parseFloat(crop.width),
-                height: isNaN(parseFloat(crop?.height)) ? 60 : parseFloat(crop.height)
-              }}
-              onChange={onCropChange}
-              onComplete={onCropComplete}
-              aspect={undefined}
-            >
-              <img
-                ref={imgRef}
-                src={imageUrl}
-                onLoad={onImageLoad}
-                onError={(e) => {
-                  console.error('❌ 이미지 로드 오류:', e);
-                  console.log('🔍 시도한 URL:', imageUrl);
+            {imageUrl ? (
+              <ReactCrop
+                crop={{
+                  unit: crop?.unit || '%',
+                  x: isNaN(parseFloat(crop?.x)) ? 20 : parseFloat(crop.x),
+                  y: isNaN(parseFloat(crop?.y)) ? 20 : parseFloat(crop.y),
+                  width: isNaN(parseFloat(crop?.width)) ? 60 : parseFloat(crop.width),
+                  height: isNaN(parseFloat(crop?.height)) ? 60 : parseFloat(crop.height)
                 }}
-                style={{ 
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  width: 'auto',
-                  height: 'auto',
-                  objectFit: 'contain'
-                }}
-                alt="편집할 이미지"
-              />
-            </ReactCrop>
+                onChange={onCropChange}
+                onComplete={onCropComplete}
+                aspect={undefined}
+              >
+                <img
+                  ref={imgRef}
+                  src={imageUrl}
+                  onLoad={onImageLoad}
+                  onError={(e) => {
+                    console.error('❌ 이미지 로드 오류:', e);
+                    console.log('🔍 시도한 URL:', imageUrl);
+                  }}
+                  style={{ 
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    width: 'auto',
+                    height: 'auto',
+                    objectFit: 'contain'
+                  }}
+                  alt="편집할 이미지"
+                />
+              </ReactCrop>
+            ) : (
+              <div className="loading-placeholder">
+                이미지를 로드하는 중...
+              </div>
+            )}
           </div>
         
           <div className="controls-panel">

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // axios 인스턴스 생성
 const api = axios.create({
-  baseURL: '', // 빈 문자열로 변경하여 프록시가 정상 작동하도록 함
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 10000, // 10초 타임아웃
   headers: {
     'Content-Type': 'application/json',
@@ -41,8 +41,8 @@ api.interceptors.response.use(
 
 // FormData 전용 API (Content-Type 헤더 제외)
 export const apiFormData = axios.create({
-  baseURL: '', // 빈 문자열로 변경하여 프록시가 정상 작동하도록 함
-  timeout: 30000, // 파일 업로드는 더 긴 타임아웃
+  baseURL: import.meta.env.VITE_API_URL,
+  timeout: 600000, // 파일 업로드는 더 긴 타임아웃
 });
 
 // FormData용 요청 인터셉터
