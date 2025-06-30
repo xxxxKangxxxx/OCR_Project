@@ -29,18 +29,19 @@ const Navigation = () => {
         if (location.pathname !== '/') {
           navigate('/');
         }
-        window.location.reload();
+        // 새로고침 대신 상태만 초기화
+        setIsUploading(false);
+        setUploadProgress(0);
+        setStatus('idle');
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [uploadProgress, location.pathname, navigate]);
+  }, [uploadProgress, location.pathname, navigate, setIsUploading, setUploadProgress, setStatus]);
 
   const handleFileUpload = async (event) => {
     const files = event.target.files;
-    console.log('📁 파일 선택됨:', files);
     
     if (!files || files.length === 0) {
-      console.log('❌ 파일이 선택되지 않음');
       return;
     }
 
@@ -76,8 +77,6 @@ const Navigation = () => {
     setStatus('loading');
 
     try {
-      console.log('🌐 API 요청 시작');
-      
       // JWT 인증이 포함된 API 호출 (각 파일별로 처리)
       let successCount = 0;
       let errorMessages = [];
@@ -88,7 +87,6 @@ const Navigation = () => {
         const file = files[fileIndex];
         
         try {
-          console.log(`🔄 ${file.name} 처리 시작...`);
           
           // 현재 파일 처리 시작 시 진행률 계산
           const baseProgress = Math.floor((fileIndex / totalFiles) * 90);
@@ -120,7 +118,6 @@ const Navigation = () => {
             errorMessages.push(`${file.name}: ${result.error}`);
           } else {
             successCount++;
-            console.log(`✅ ${file.name} 처리 완료:`, result);
           }
           
           // 현재 파일 처리 완료 - 진행률을 해당 구간의 끝까지 채움
@@ -128,7 +125,7 @@ const Navigation = () => {
           setUploadProgress(nextProgress);
           
         } catch (error) {
-          console.error(`❌ ${file.name} 처리 실패:`, error);
+          console.error(`${file.name} 처리 실패:`, error);
           // 인증 오류가 아닌 경우에만 에러 메시지 추가
           if (error.response?.status !== 401) {
             errorMessages.push(`${file.name}: ${error.message || '처리 중 오류가 발생했습니다'}`);
@@ -168,10 +165,10 @@ const Navigation = () => {
         }, 2000);
       } else {
         showSuccess(files.length, successCount);
-        // MongoDB에 저장되므로 페이지 새로고침으로 최신 데이터 표시
+        // 백그라운드 처리 시스템이 자동으로 데이터를 새로고침함
       }
     } catch (error) {
-      console.error('❌ API 요청 실패:', error);
+      console.error('API 요청 실패:', error);
       showError('명함 처리 중 오류가 발생했습니다.');
       // 오류 발생 시 Home 페이지로 이동
       setTimeout(() => {

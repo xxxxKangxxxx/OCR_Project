@@ -7,12 +7,14 @@ import HomePage from './components/HomePage';
 import CompanyCards from './components/CompanyCards';
 import CardList from './components/CardList';
 import MyPage from './components/MyPage';
+import FavoritePage from './components/FavoritePage';
 import Login from './components/Login';
 import Register from './components/Register';
 import ImageEditorPage from './components/ImageEditorPage';
 import AuthProvider from './contexts/AuthContext';
 import { LoadingProvider } from './contexts/LoadingContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import OCRProcessingPage from './components/OCRProcessingPage';
 
 // 페이지 이동 시 스크롤을 맨 위로 이동시키는 컴포넌트
 function ScrollToTop() {
@@ -83,6 +85,13 @@ function AppContent() {
           </ProtectedRoute>
         } />
         
+        {/* OCR 처리 중 대기 페이지 - ProtectedRoute의 로딩 화면 활용 */}
+        <Route path="/ocr-processing" element={
+          <ProtectedRoute>
+            <OCRProcessingPage />
+          </ProtectedRoute>
+        } />
+        
         {/* 인증이 필요한 페이지들 - ScrollToTop 적용 */}
         <Route path="/*" element={
           <ProtectedRoute>
@@ -100,6 +109,10 @@ function AppContent() {
                 <Route 
                   path="/cards/date/:date" 
                   element={<CardList key={`cards-date-${location.pathname}-${Date.now()}`} />} 
+                />
+                <Route 
+                  path="/favorites" 
+                  element={<FavoritePage key={`favorites-${location.pathname}-${Date.now()}`} />} 
                 />
                 <Route 
                   path="/mypage" 

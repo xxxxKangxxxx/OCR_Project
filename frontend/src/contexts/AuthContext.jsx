@@ -16,9 +16,10 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('access_token'));
   const [isUploadingCards, setIsUploadingCards] = useState(false);
+  const [ocrFileInfo, setOcrFileInfo] = useState(null);
 
   // 토큰 유효성 검증 및 사용자 정보 로드
-  const loadUser = async () => {
+  const loadUser = async (isInitialLoad = false) => {
     if (!token) {
       setLoading(false);
       return;
@@ -29,19 +30,20 @@ const AuthProvider = ({ children }) => {
       setUser(data);
     } catch (error) {
       console.error('사용자 정보 로드 실패:', error);
-      // 명함 업로드 중이 아닐 때만 로그아웃
       if (!isUploadingCards) {
         logout();
       }
     } finally {
-      setLoading(false);
+      // 초기 로딩일 때만 loading 상태를 false로 설정
+      if (isInitialLoad) {
+        setLoading(false);
+      }
     }
   };
 
   // 로그인
   const login = async (username, password) => {
     try {
-      // 로그인은 form-urlencoded 형태로 전송 (FastAPI OAuth2PasswordRequestForm 요구사항)
       const { data } = await api.post('/api/auth/login', 
         new URLSearchParams({
           username,
@@ -59,7 +61,6 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem('access_token', newToken);
       localStorage.setItem('token_type', data.token_type);
       
-      // 사용자 정보 로드
       await loadUserWithToken(newToken);
       return { success: true };
     } catch (error) {
@@ -73,8 +74,6 @@ const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const { data } = await api.post('/api/auth/register', userData);
-      
-      // 회원가입 성공 시 자동 로그인하지 않고 성공만 반환
       return { success: true, message: '회원가입이 완료되었습니다. 로그인해주세요.' };
     } catch (error) {
       console.error('회원가입 오류:', error);
@@ -105,51 +104,56 @@ const AuthProvider = ({ children }) => {
     localStorage.removeItem('token_type');
   };
 
-  // API 요청 헬퍼 함수 - 훨씬 간단해짐!
+  // API 요청 헬퍼 함수
   const apiRequest = async (url, options = {}) => {
     try {
-      // 명함 업로드 요청인지 확인
       const isCardUpload = url.includes('/api/cards/ocr');
       if (isCardUpload) {
+        // 파일 정보 추출
+        let fileCount = 0;
+        let totalSize = 0;
+        if (options.body instanceof FormData) {
+          const files = options.body.getAll('files');
+          fileCount = files.length;
+          totalSize = files.reduce((sum, file) => sum + file.size, 0);
+        }
+        
+        setOcrFileInfo({ fileCount, totalSize });
         setIsUploadingCards(true);
+        // OCR 처리 중에는 loading을 true로 설정하지 않음 (isUploadingCards로 처리)
       }
 
-      // FormData인지 확인
       const isFormData = options.body instanceof FormData;
       
       if (isFormData) {
-        // FormData는 apiFormData 인스턴스 사용
-        const { data } = await apiFormData({
-          url,
-          method: options.method || 'GET',
-          data: options.body,
-          ...options
-        });
-        return data;
+        if (options.method === 'POST') {
+          const { data } = await apiFormData.post(url, options.body);
+          return data;
+        } else if (options.method === 'PUT') {
+          const { data } = await apiFormData.put(url, options.body);
+          return data;
+        } else {
+          throw new Error('FormData는 POST 또는 PUT 메서드만 지원됩니다.');
+        }
       } else {
-        // 일반 JSON 요청은 기본 api 인스턴스 사용
-        const { data } = await api({
-          url,
+        const config = {
           method: options.method || 'GET',
-          data: options.body ? JSON.parse(options.body) : undefined,
+          url: url,
+          ...(options.body && { data: JSON.parse(options.body) }),
           ...options
-        });
+        };
+        
+        const { data } = await api(config);
         return data;
       }
     } catch (error) {
       throw error;
-    } finally {
-      // 명함 업로드 완료 시 상태 초기화
-      if (url.includes('/api/cards/ocr')) {
-        setIsUploadingCards(false);
-      }
     }
   };
 
   // 401 에러 이벤트 리스너
   useEffect(() => {
     const handleUnauthorized = () => {
-      // 명함 업로드 중이 아닐 때만 로그아웃
       if (!isUploadingCards) {
         logout();
       }
@@ -163,13 +167,13 @@ const AuthProvider = ({ children }) => {
 
   // 컴포넌트 마운트 시 사용자 정보 로드
   useEffect(() => {
-    loadUser();
+    loadUser(true); // 초기 로딩임을 표시
   }, []);
 
   // 토큰 변경 시 사용자 정보 업데이트
   useEffect(() => {
     if (token && !user) {
-      loadUser();
+      loadUser(false); // 초기 로딩이 아님
     }
   }, [token]);
 
@@ -183,7 +187,8 @@ const AuthProvider = ({ children }) => {
     apiRequest,
     isAuthenticated: !!user && !!token,
     isUploadingCards,
-    setIsUploadingCards
+    setIsUploadingCards,
+    ocrFileInfo
   };
 
   return (

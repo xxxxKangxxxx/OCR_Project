@@ -25,6 +25,77 @@ router = APIRouter(prefix="/api/cards", tags=["business_cards"])
 UPLOAD_FOLDER = 'uploads'
 ocr_processor = OCRProcessor(UPLOAD_FOLDER)
 
+@router.get("/stats")
+async def get_cards_stats(current_user: UserInDB = Depends(get_current_active_user)):
+    """사용자의 명함 통계 조회"""
+    try:
+        db = get_database()
+        
+        # 전체 명함 수
+        total_cards = await db.business_cards.count_documents({"user_id": current_user.id})
+        
+        # 즐겨찾기 명함 수
+        favorite_cards = await db.business_cards.count_documents({
+            "user_id": current_user.id,
+            "isFavorite": True
+        })
+        
+        # 회사별 명함 수 집계
+        pipeline = [
+            {"$match": {"user_id": current_user.id}},
+            {"$group": {
+                "_id": "$company_name",
+                "count": {"$sum": 1}
+            }},
+            {"$sort": {"count": -1}},
+            {"$limit": 10}
+        ]
+        
+        company_stats_cursor = db.business_cards.aggregate(pipeline)
+        company_stats = {}
+        async for item in company_stats_cursor:
+            company_name = item["_id"] or "미지정"
+            company_stats[company_name] = item["count"]
+        
+        # 최근 추가된 명함 수 (7일 이내)
+        from datetime import datetime, timedelta
+        seven_days_ago = datetime.utcnow() - timedelta(days=7)
+        recently_added = await db.business_cards.count_documents({
+            "user_id": current_user.id,
+            "created_at": {"$gte": seven_days_ago}
+        })
+        
+        # 최근 스캔한 명함 목록 (최대 10개, 최신순)
+        recent_scans_cursor = db.business_cards.find({
+            "user_id": current_user.id,
+            "created_at": {"$gte": seven_days_ago}
+        }).sort("created_at", -1).limit(10)
+        
+        recent_scans = []
+        async for card_data in recent_scans_cursor:
+            recent_scans.append({
+                "id": str(card_data["_id"]),
+                "name": card_data.get("name"),
+                "company_name": card_data.get("company_name"),
+                "created_at": card_data["created_at"],
+                "createdAt": card_data["created_at"]  # 프론트엔드 호환성
+            })
+        
+        return {
+            "total": total_cards,
+            "favorites": favorite_cards,
+            "byCompany": company_stats,
+            "recentlyAdded": recently_added,
+            "recentScans": recent_scans
+        }
+        
+    except Exception as e:
+        logger.error(f"통계 조회 실패: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="통계 조회 중 오류가 발생했습니다"
+        )
+
 @router.get("/", response_model=List[BusinessCard])
 async def get_user_cards(current_user: UserInDB = Depends(get_current_active_user)):
     """현재 사용자의 모든 명함 조회"""
@@ -52,6 +123,7 @@ async def get_user_cards(current_user: UserInDB = Depends(get_current_active_use
                 postal_code=card_data.get("postal_code"),
                 ocr_raw_text=card_data.get("ocr_raw_text"),
                 ocr_confidence=card_data.get("ocr_confidence"),
+                processing_status=card_data.get("processing_status"),
                 isFavorite=card_data.get("isFavorite", False),
                 created_at=card_data["created_at"],
                 updated_at=card_data["updated_at"]
@@ -99,6 +171,7 @@ async def get_card(card_id: str, current_user: UserInDB = Depends(get_current_ac
             postal_code=card_data.get("postal_code"),
             ocr_raw_text=card_data.get("ocr_raw_text"),
             ocr_confidence=card_data.get("ocr_confidence"),
+            processing_status=card_data.get("processing_status"),
             isFavorite=card_data.get("isFavorite", False),
             created_at=card_data["created_at"],
             updated_at=card_data["updated_at"]
@@ -138,6 +211,7 @@ async def create_card(
             "postal_code": card_data.postal_code,
             "ocr_raw_text": card_data.ocr_raw_text,
             "ocr_confidence": card_data.ocr_confidence,
+            "processing_status": "processing",
             "isFavorite": card_data.isFavorite,
             "created_at": now,
             "updated_at": now
@@ -218,6 +292,7 @@ async def update_card(
             postal_code=updated_card.get("postal_code"),
             ocr_raw_text=updated_card.get("ocr_raw_text"),
             ocr_confidence=updated_card.get("ocr_confidence"),
+            processing_status=updated_card.get("processing_status"),
             isFavorite=updated_card.get("isFavorite", False),
             created_at=updated_card["created_at"],
             updated_at=updated_card["updated_at"]
@@ -330,6 +405,7 @@ async def get_favorite_cards(current_user: UserInDB = Depends(get_current_active
                 postal_code=card_data.get("postal_code"),
                 ocr_raw_text=card_data.get("ocr_raw_text"),
                 ocr_confidence=card_data.get("ocr_confidence"),
+                processing_status=card_data.get("processing_status"),
                 isFavorite=card_data.get("isFavorite", False),
                 created_at=card_data["created_at"],
                 updated_at=card_data["updated_at"]
@@ -380,76 +456,162 @@ async def process_ocr_and_save(
                 shutil.copyfileobj(file.file, buffer)
             logger.info(f"📁 파일 저장: {file_path}")
             
-            # OCR 처리
-            ocr_result = await ocr_processor.process_image(file_path)
-            logger.info(f"✅ OCR 처리 완료: {file.filename}")
-            
-            # OCR 결과 파싱
-            parsed_result = parse_ocr_result(ocr_result, file.filename)
-            logger.info(f"✅ 파싱 완료: {file.filename}")
-            
-            # MongoDB에 명함 저장
+            # 🚨 중요: 먼저 빈 명함을 생성하여 즉시 응답
             db = get_database()
             now = datetime.utcnow()
             
-            card_dict = {
+            # 임시 명함 생성 (처리 중 상태)
+            temp_card_dict = {
                 "user_id": current_user.id,
-                "name": parsed_result.get('name'),
-                "name_en": parsed_result.get('name_en'),
-                "email": parsed_result.get('email'),
-                "phone_number": parsed_result.get('phone'),
-                "mobile_phone_number": parsed_result.get('mobile'),
-                "fax_number": parsed_result.get('fax'),
-                "position": parsed_result.get('position'),
-                "department": parsed_result.get('department'),
-                "company_name": parsed_result.get('company_name'),
-                "address": parsed_result.get('address'),
-                "postal_code": parsed_result.get('postal_code'),
-                "ocr_raw_text": parsed_result.get('ocr_raw_text'),
+                "name": None,
+                "name_en": None,
+                "email": None,
+                "phone_number": None,
+                "mobile_phone_number": None,
+                "fax_number": None,
+                "position": None,
+                "department": None,
+                "company_name": None,
+                "address": None,
+                "postal_code": None,
+                "ocr_raw_text": "처리 중...",
                 "ocr_confidence": None,
                 "original_filename": file.filename,
                 "stored_filename": unique_filename,
                 "file_path": file_path,
+                "processing_status": "processing",  # 처리 상태 추가
                 "isFavorite": False,
                 "created_at": now,
                 "updated_at": now
             }
             
-            result = await db.business_cards.insert_one(card_dict)
-            logger.info(f"💾 명함 저장 완료: {result.inserted_id}")
+            result = await db.business_cards.insert_one(temp_card_dict)
+            card_id = str(result.inserted_id)
+            logger.info(f"💾 임시 명함 생성: {card_id}")
             
-            # OCR 결과 반환
+            # 백그라운드에서 OCR 처리 시작
+            import asyncio
+            asyncio.create_task(process_ocr_background(file_path, card_id, file.filename))
+            
+            # 즉시 응답 반환 (처리 중 상태)
             return OCRResult(
-                text=ocr_result,
-                name=parsed_result.get('name'),
-                name_en=parsed_result.get('name_en'),
-                email=parsed_result.get('email'),
-                phone_number=parsed_result.get('phone'),
-                position=parsed_result.get('position'),
-                company_name=parsed_result.get('company_name'),
-                address=parsed_result.get('address'),
-                mobile_phone_number=parsed_result.get('mobile'),
-                fax_number=parsed_result.get('fax'),
-                department=parsed_result.get('department'),
-                postal_code=parsed_result.get('postal_code'),
-                ocr_raw_text=parsed_result.get('ocr_raw_text'),
-                error=None
+                text=["처리 중입니다..."],
+                name="처리 중",
+                ocr_raw_text="OCR 처리가 진행 중입니다. 잠시 후 새로고침해주세요.",
+                error=None,
+                processing_status="processing",
+                card_id=card_id
             )
             
         except Exception as e:
-            logger.error(f"❌ OCR 처리 오류 {file.filename}: {str(e)}", exc_info=True)
-            # OCR 처리 실패 시 파일 삭제
+            logger.error(f"❌ 파일 저장 오류 {file.filename}: {str(e)}", exc_info=True)
+            # 파일 저장 실패 시 파일 삭제
             try:
                 if os.path.exists(file_path):
                     os.remove(file_path)
                     logger.info(f"🗑 실패한 파일 삭제: {file_path}")
             except Exception as cleanup_error:
                 logger.error(f"파일 삭제 오류 {file_path}: {str(cleanup_error)}")
-            return OCRResult(text=[], error=f"OCR 처리 중 오류가 발생했습니다: {str(e)}")
+            return OCRResult(text=[], error=f"파일 저장 중 오류가 발생했습니다: {str(e)}")
                 
     except Exception as e:
         logger.error(f"❌ OCR 엔드포인트 오류: {str(e)}", exc_info=True)
         return OCRResult(text=[], error=f"서버 오류가 발생했습니다: {str(e)}")
+
+async def process_ocr_background(file_path: str, card_id: str, original_filename: str):
+    """백그라운드에서 OCR 처리"""
+    try:
+        logger.info(f"🔄 백그라운드 OCR 시작: {original_filename}")
+        logger.info(f"📁 파일 경로: {file_path}")
+        logger.info(f"🆔 카드 ID: {card_id}")
+        
+        # 파일 존재 확인
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"파일을 찾을 수 없습니다: {file_path}")
+        
+        logger.info(f"📄 파일 크기: {os.path.getsize(file_path)} bytes")
+        
+        # OCR 처리
+        logger.info("🔄 OCR 프로세서 호출 중...")
+        ocr_result = await ocr_processor.process_image(file_path)
+        logger.info(f"✅ OCR 처리 완료: {len(ocr_result)}개 텍스트 추출")
+        
+        # OCR 결과 로깅 (처음 5개만)
+        if ocr_result:
+            logger.info("📋 추출된 텍스트 샘플:")
+            for i, text in enumerate(ocr_result[:5]):
+                logger.info(f"  {i+1}. {text}")
+        else:
+            logger.warning("⚠️ OCR 결과가 비어있습니다")
+        
+        # OCR 결과 파싱
+        logger.info("🔄 파싱 시작...")
+        parsed_result = parse_ocr_result(ocr_result, original_filename)
+        logger.info("✅ 파싱 완료")
+        
+        # 파싱 결과 로깅
+        logger.info("📊 파싱된 정보:")
+        logger.info(f"  📛 이름: {parsed_result.get('name')}")
+        logger.info(f"  🏢 회사: {parsed_result.get('company_name')}")
+        logger.info(f"  📧 이메일: {parsed_result.get('email')}")
+        logger.info(f"  📞 전화: {parsed_result.get('phone')}")
+        logger.info(f"  💼 직책: {parsed_result.get('position')}")
+        
+        # MongoDB 업데이트
+        logger.info("💾 데이터베이스 업데이트 시작...")
+        db = get_database()
+        now = datetime.utcnow()
+        
+        update_dict = {
+            "name": parsed_result.get('name'),
+            "name_en": parsed_result.get('name_en'),
+            "email": parsed_result.get('email'),
+            "phone_number": parsed_result.get('phone'),
+            "mobile_phone_number": parsed_result.get('mobile'),
+            "fax_number": parsed_result.get('fax'),
+            "position": parsed_result.get('position'),
+            "department": parsed_result.get('department'),
+            "company_name": parsed_result.get('company_name'),
+            "address": parsed_result.get('address'),
+            "postal_code": parsed_result.get('postal_code'),
+            "ocr_raw_text": parsed_result.get('ocr_raw_text'),
+            "processing_status": "completed",  # 처리 완료
+            "updated_at": now
+        }
+        
+        await db.business_cards.update_one(
+            {"_id": ObjectId(card_id)},
+            {"$set": update_dict}
+        )
+        
+        logger.info(f"💾 명함 업데이트 완료: {card_id}")
+        
+    except Exception as e:
+        logger.error(f"❌ 백그라운드 OCR 처리 오류: {str(e)}", exc_info=True)
+        
+        # 오류 상태로 업데이트
+        try:
+            db = get_database()
+            await db.business_cards.update_one(
+                {"_id": ObjectId(card_id)},
+                {"$set": {
+                    "processing_status": "failed",
+                    "ocr_raw_text": f"처리 실패: {str(e)}",
+                    "updated_at": datetime.utcnow()
+                }}
+            )
+            logger.info(f"💾 실패 상태 업데이트 완료: {card_id}")
+        except Exception as update_error:
+            logger.error(f"상태 업데이트 실패: {str(update_error)}")
+    
+    finally:
+        # 임시 파일 정리
+        try:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                logger.info(f"🗑 임시 파일 삭제: {file_path}")
+        except Exception as cleanup_error:
+            logger.error(f"파일 정리 오류: {str(cleanup_error)}")
 
 @router.get("/search/{query}", response_model=List[BusinessCard])
 async def search_cards(query: str, current_user: UserInDB = Depends(get_current_active_user)):
@@ -490,6 +652,7 @@ async def search_cards(query: str, current_user: UserInDB = Depends(get_current_
                 postal_code=card_data.get("postal_code"),
                 ocr_raw_text=card_data.get("ocr_raw_text"),
                 ocr_confidence=card_data.get("ocr_confidence"),
+                processing_status=card_data.get("processing_status"),
                 isFavorite=card_data.get("isFavorite", False),
                 created_at=card_data["created_at"],
                 updated_at=card_data["updated_at"]

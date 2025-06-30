@@ -65,6 +65,7 @@ class BusinessCardBase(BaseModel):
     original_filename: Optional[str] = None
     stored_filename: Optional[str] = None
     file_path: Optional[str] = None
+    processing_status: Optional[str] = None  # "processing", "completed", "failed"
     isFavorite: bool = False
 
 class BusinessCardCreate(BusinessCardBase):
@@ -154,4 +155,6 @@ class OCRResult(BaseModel):
     department: Optional[str] = None
     postal_code: Optional[str] = None
     ocr_raw_text: Optional[str] = None
+    processing_status: Optional[str] = None  # "processing", "completed", "failed"
+    card_id: Optional[str] = None  # 생성된 명함 ID
     error: Optional[str] = None 

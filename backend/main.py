@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 import os
 import shutil
 from pydantic import BaseModel
@@ -79,6 +79,13 @@ class ProcessingResult(BaseModel):
     parsed: Optional[Dict[str, Any]] = None
     error: Optional[str] = None
 
+class LogoResult(BaseModel):
+    bbox: Optional[List[float]] = None
+    confidence: Optional[float] = None
+    method: Optional[str] = None
+    logo_path: Optional[str] = None
+    logo_size: Optional[Tuple[int, int]] = None
+
 class OCRResult(BaseModel):
     text: List[str]
     name: Optional[str] = None
@@ -93,6 +100,7 @@ class OCRResult(BaseModel):
     department: Optional[str] = None
     postal_code: Optional[str] = None
     ocr_raw_text: Optional[str] = None
+    logo: Optional[LogoResult] = None
     error: Optional[str] = None
 
 @app.get("/")
@@ -150,13 +158,27 @@ async def process_ocr_legacy(files: List[UploadFile] = File(...)):
                 shutil.copyfileobj(file.file, buffer)
             logger.info(f"📁 파일 저장: {file_path}")
             
-            # OCR 처리
-            ocr_result = await ocr_processor.process_image(file_path)
-            logger.info(f"✅ OCR 처리 완료: {file.filename}")
+            # OCR + 로고 처리
+            enhanced_result = await ocr_processor.process_image_with_logo(file_path)
+            ocr_result = enhanced_result['text']
+            logo_result = enhanced_result.get('logo')
+            
+            logger.info(f"✅ OCR + 로고 처리 완료: {file.filename}")
             
             # OCR 결과 파싱
             parsed_result = parse_ocr_result(ocr_result, file.filename)
             logger.info(f"✅ 파싱 완료: {file.filename}")
+            
+            # 로고 결과 처리
+            logo_data = None
+            if logo_result:
+                logo_data = LogoResult(
+                    bbox=logo_result.get('bbox'),
+                    confidence=logo_result.get('confidence'),
+                    method=logo_result.get('method'),
+                    logo_path=logo_result.get('logo_path'),
+                    logo_size=logo_result.get('logo_size')
+                )
             
             # OCR 결과와 파싱 결과 합치기
             return OCRResult(
@@ -173,6 +195,7 @@ async def process_ocr_legacy(files: List[UploadFile] = File(...)):
                 department=parsed_result.get('department'),
                 postal_code=parsed_result.get('postal_code'),
                 ocr_raw_text=parsed_result.get('ocr_raw_text'),
+                logo=logo_data,
                 error=None
             )
             
@@ -254,8 +277,53 @@ async def upload_files_legacy(files: List[UploadFile] = File(...)):
                     logger.info(f"🗑 임시 파일 삭제: {file_path}")
             except Exception as e:
                 logger.error(f"임시 파일 삭제 오류 {file_path}: {str(e)}")
-            
+
     return results
+
+@app.post("/api/extract-logo", response_model=LogoResult)
+async def extract_logo_only(file: UploadFile = File(...)):
+    """로고만 추출하는 엔드포인트"""
+    logger.info(f"🔍 로고 추출 요청: {file.filename}")
+    
+    if not ocr_processor.allowed_file(file.filename):
+        raise HTTPException(status_code=400, detail="지원하지 않는 파일 형식입니다.")
+    
+    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    
+    try:
+        # 파일 저장
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        logger.info(f"📁 파일 저장: {file_path}")
+        
+        # 로고 추출
+        logo_result = ocr_processor.extract_logo_only(file_path)
+        
+        if logo_result:
+            logger.info(f"✅ 로고 추출 성공: {file.filename}")
+            return LogoResult(
+                bbox=logo_result.get('bbox'),
+                confidence=logo_result.get('confidence'),
+                method=logo_result.get('method'),
+                logo_path=logo_result.get('logo_path'),
+                logo_size=logo_result.get('logo_size')
+            )
+        else:
+            logger.info(f"❌ 로고를 찾을 수 없음: {file.filename}")
+            return LogoResult()  # 빈 결과 반환
+            
+    except Exception as e:
+        logger.error(f"❌ 로고 추출 오류 {file.filename}: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"로고 추출 중 오류가 발생했습니다: {str(e)}")
+        
+    finally:
+        # 임시 파일 삭제
+        try:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                logger.info(f"🗑 임시 파일 삭제: {file_path}")
+        except Exception as e:
+            logger.error(f"임시 파일 삭제 오류 {file_path}: {str(e)}")
 
 # 헬스 체크 엔드포인트
 @app.get("/health")

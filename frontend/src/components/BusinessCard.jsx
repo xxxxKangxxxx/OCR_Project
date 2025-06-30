@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useBusinessCardsAPI } from '../hooks/useBusinessCardsAPI';
 import './BusinessCard.css';
 
-const BusinessCard = ({ card, onEdit, onDelete }) => {
+const BusinessCard = ({ card, onEdit, onDelete, onFavoriteChange }) => {
   const { toggleFavorite, deleteCard } = useBusinessCardsAPI();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isFavorite, setIsFavorite] = useState(card.isFavorite);
@@ -12,6 +12,10 @@ const BusinessCard = ({ card, onEdit, onDelete }) => {
     try {
       await toggleFavorite(card.id);
       setIsFavorite(!isFavorite);
+      // 즐겨찾기 상태 변경 콜백 호출
+      if (onFavoriteChange) {
+        onFavoriteChange();
+      }
     } catch (error) {
       console.error('즐겨찾기 토글 실패:', error);
     }

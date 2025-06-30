@@ -3,7 +3,7 @@ import axios from 'axios';
 // axios 인스턴스 생성
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  timeout: 10000, // 10초 타임아웃
+  timeout: 0, // 타임아웃 제거 - 사용자에게 진행 상황을 보여주는 것이 더 나은 UX
   headers: {
     'Content-Type': 'application/json',
   },
@@ -42,7 +42,7 @@ api.interceptors.response.use(
 // FormData 전용 API (Content-Type 헤더 제외)
 export const apiFormData = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  timeout: 600000, // 파일 업로드는 더 긴 타임아웃
+  timeout: 0, // 타임아웃 제거 - 진행률과 취소 기능으로 UX 개선
 });
 
 // FormData용 요청 인터셉터

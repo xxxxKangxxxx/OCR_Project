@@ -1,7 +1,6 @@
 import React from 'react';
 import Header from './Header';
 import Navigation from './Navigation';
-import LoadingModal from './LoadingModal';
 import './Layout.css';
 
 const Layout = ({ children }) => {
@@ -14,7 +13,6 @@ const Layout = ({ children }) => {
       <nav className="layout-navigation">
         <Navigation />
       </nav>
-      <LoadingModal />
     </div>
   );
 };

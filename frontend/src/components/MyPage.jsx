@@ -73,6 +73,10 @@ const MyPage = () => {
     navigate('/?filter=company');
   };
 
+  const handleFavoritesClick = () => {
+    navigate('/favorites');
+  };
+
   const handleDarkModeToggle = () => {
     setDarkMode(!darkMode);
   };
@@ -133,7 +137,7 @@ const MyPage = () => {
             </svg>
           </div>
           <div className="stat-content">
-            <h3 className="stat-number">{stats.totalCards || 0}</h3>
+            <h3 className="stat-number">{stats.total || 0}</h3>
             <p className="stat-label">총 명함 수</p>
           </div>
         </div>
@@ -146,19 +150,19 @@ const MyPage = () => {
             </svg>
           </div>
           <div className="stat-content">
-            <h3 className="stat-number">{stats.totalCompanies || 0}</h3>
+            <h3 className="stat-number">{Object.keys(stats.byCompany || {}).length || 0}</h3>
             <p className="stat-label">등록 회사 수</p>
           </div>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card clickable" onClick={handleFavoritesClick}>
           <div className="stat-icon favorite-cards">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
             </svg>
           </div>
           <div className="stat-content">
-            <h3 className="stat-number">{stats.favoriteCards || 0}</h3>
+            <h3 className="stat-number">{stats.favorites || 0}</h3>
             <p className="stat-label">즐겨찾기</p>
           </div>
         </div>
@@ -171,8 +175,8 @@ const MyPage = () => {
             </svg>
           </div>
           <div className="stat-content">
-            <h3 className="stat-number">{stats.recentScans?.length || 0}</h3>
-            <p className="stat-label">최근 스캔</p>
+            <h3 className="stat-number">{stats.recentlyAdded || 0}</h3>
+            <p className="stat-label">최근 7일 스캔</p>
           </div>
         </div>
       </div>
@@ -304,22 +308,41 @@ const MyPage = () => {
           <div className="section-card">
             <h2 className="section-title">최근 활동</h2>
             <div className="activity-list">
-              {stats.recentScans?.map((scan, index) => (
-                <div key={index} className="activity-item">
-                  <div className="activity-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                      <circle cx="12" cy="13" r="4"></circle>
-                    </svg>
-                  </div>
-                  <div className="activity-content">
-                    <p className="activity-text">
-                      {scan.name ? `${scan.name}님의 명함을 스캔했습니다.` : '새로운 명함을 스캔했습니다.'}
-                    </p>
-                    <p className="activity-time">{new Date(scan.created_at || scan.createdAt).toLocaleString()}</p>
-                  </div>
+              {(!stats.recentScans || stats.recentScans.length === 0) ? (
+                <div style={{ 
+                  textAlign: 'center', 
+                  padding: '3rem 2rem', 
+                  color: '#888',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '1rem'
+                }}>
+                  <div style={{ fontSize: '3rem', opacity: 0.3 }}>📋</div>
+                  <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#666' }}>최근 활동이 없습니다</h3>
+                  <p style={{ margin: 0, lineHeight: 1.6, color: '#888' }}>
+                    최근 7일간 스캔한 명함이 없습니다.<br/>
+                    새로운 명함을 스캔해보세요!
+                  </p>
                 </div>
-              ))}
+              ) : (
+                stats.recentScans.map((scan, index) => (
+                  <div key={index} className="activity-item">
+                    <div className="activity-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                      </svg>
+                    </div>
+                    <div className="activity-content">
+                      <p className="activity-text">
+                        {scan.name ? `${scan.name}님의 명함을 스캔했습니다.` : '새로운 명함을 스캔했습니다.'}
+                      </p>
+                      <p className="activity-time">{new Date(scan.created_at || scan.createdAt).toLocaleString()}</p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}

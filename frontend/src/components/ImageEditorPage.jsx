@@ -74,7 +74,6 @@ const ImageEditorPage = () => {
   // react-image-crop 이벤트 핸들러들
   const onImageLoad = useCallback((e) => {
     const { width, height } = e.currentTarget;
-    console.log('🖼️ ReactCrop 이미지 로드됨:', width, 'x', height, '현재 crop:', crop);
     
     // 유효하지 않은 crop 값이 있을 때 초기값으로 설정
     const hasValidCrop = crop && 
@@ -92,10 +91,7 @@ const ImageEditorPage = () => {
         width: 60,
         height: 60
       };
-      console.log('🔧 유효하지 않은 crop 감지 - 초기 crop 설정:', initialCrop);
       setCrop(initialCrop);
-    } else {
-      console.log('✅ 기존 crop 유지:', crop);
     }
   }, [crop]);
 
@@ -108,7 +104,6 @@ const ImageEditorPage = () => {
       width: isNaN(parseFloat(newCrop.width)) ? 60 : parseFloat(newCrop.width),
       height: isNaN(parseFloat(newCrop.height)) ? 60 : parseFloat(newCrop.height)
     };
-    console.log('🔄 Crop 변경:', newCrop, '->', sanitizedCrop);
     setCrop(sanitizedCrop);
   }, []);
 
@@ -121,7 +116,6 @@ const ImageEditorPage = () => {
       width: isNaN(parseFloat(newCrop.width)) ? 60 : parseFloat(newCrop.width),
       height: isNaN(parseFloat(newCrop.height)) ? 60 : parseFloat(newCrop.height)
     };
-    console.log('✅ Crop 완료:', newCrop, '->', sanitizedCrop);
     setCompletedCrop(sanitizedCrop);
   }, []);
 
@@ -135,7 +129,6 @@ const ImageEditorPage = () => {
       height: 70
     });
     setCompletedCrop(null);
-    console.log('🔄 크롭 리셋됨');
   };
 
   // OCR 처리 함수
@@ -145,7 +138,6 @@ const ImageEditorPage = () => {
     setStatus('loading');
 
     try {
-      console.log('🌐 API 요청 시작');
       
       let successCount = 0;
       let errorMessages = [];
@@ -156,8 +148,6 @@ const ImageEditorPage = () => {
         const file = files[fileIndex];
         
         try {
-          console.log(`🔄 ${file.name} 처리 시작...`);
-          
           const baseProgress = Math.floor((fileIndex / totalFiles) * 90);
           const nextProgress = Math.floor(((fileIndex + 1) / totalFiles) * 90);
           const progressRange = nextProgress - baseProgress;
@@ -185,7 +175,6 @@ const ImageEditorPage = () => {
             errorMessages.push(`${file.name}: ${result.error}`);
           } else {
             successCount++;
-            console.log(`✅ ${file.name} 처리 완료:`, result);
           }
           
           processedFiles++;
@@ -229,9 +218,11 @@ const ImageEditorPage = () => {
         }, 2000);
       } else {
         showSuccess(files.length, successCount);
+        // OCR API 호출은 완료되었지만 실제 처리는 백그라운드에서 진행됨
+        // useBusinessCardsAPI에서 처리 완료 감지 시 자동으로 홈으로 이동
       }
     } catch (error) {
-      console.error('❌ API 요청 실패:', error);
+      console.error('API 요청 실패:', error);
       showError('명함 처리 중 오류가 발생했습니다.');
       // 오류 발생 시 Home 페이지로 이동
       setTimeout(() => {
@@ -286,8 +277,10 @@ const ImageEditorPage = () => {
       const filesToProcess = newEditedFiles.map((editedFile, index) => 
         editedFile || selectedFiles[index]
       );
+      // OCR 처리 시작 - OCR 대기 페이지로 이동
+      navigate('/ocr-processing');
+      // 백그라운드에서 OCR 처리 시작
       processFiles(filesToProcess);
-      navigate('/');
     }
   };
 
@@ -300,12 +293,14 @@ const ImageEditorPage = () => {
     if (currentEditingIndex < selectedFiles.length - 1) {
       setCurrentEditingIndex(currentEditingIndex + 1);
     } else {
-      // 모든 이미지 처리 완료
+      // 모든 이미지 처리 완료, OCR 처리 시작
       const filesToProcess = newEditedFiles.map((editedFile, index) => 
         editedFile || selectedFiles[index]
       );
+      // OCR 처리 시작 - OCR 대기 페이지로 이동
+      navigate('/ocr-processing');
+      // 백그라운드에서 OCR 처리 시작
       processFiles(filesToProcess);
-      navigate('/');
     }
   };
 
@@ -372,8 +367,7 @@ const ImageEditorPage = () => {
                   src={imageUrl}
                   onLoad={onImageLoad}
                   onError={(e) => {
-                    console.error('❌ 이미지 로드 오류:', e);
-                    console.log('🔍 시도한 URL:', imageUrl);
+                    console.error('이미지 로드 오류:', e);
                   }}
                   style={{ 
                     maxWidth: '100%',

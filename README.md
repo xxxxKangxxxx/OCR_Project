@@ -30,8 +30,9 @@ AI 기술을 활용한 스마트 명함 스캔 및 관리 서비스입니다.
 
 ### 백엔드 (선택사항)
 - **FastAPI** - 고성능 Python 웹 프레임워크
-- **EasyOCR** - AI 기반 광학 문자 인식
-- **OpenCV** - 이미지 처리
+- **EasyOCR** - AI 기반 광학 문자 인식 (텍스트 추출)
+- **YOLO v8** - 딥러닝 기반 로고 객체 탐지 및 추출
+- **OpenCV** - 이미지 처리 및 전처리
 
 ## 📦 로컬스토리지 구조
 
@@ -148,7 +149,44 @@ const handleImport = (file) => {
 ✅ **무료 사용**: 서버 비용 없음  
 ✅ **간단한 배포**: 정적 파일만으로 배포 가능  
 
-### 3. 고려사항
+### 3. 로고 추출 기능 (백엔드 포함 시)
+
+#### API 엔드포인트
+```bash
+# OCR + 로고 통합 처리
+POST /api/ocr
+Content-Type: multipart/form-data
+{
+  "files": [명함이미지파일]
+}
+
+# 로고만 추출
+POST /api/extract-logo  
+Content-Type: multipart/form-data
+{
+  "file": [명함이미지파일]
+}
+```
+
+#### 응답 예시
+```json
+{
+  "text": ["홍길동", "부장", "삼성전자", "010-1234-5678"],
+  "name": "홍길동",
+  "position": "부장", 
+  "company_name": "삼성전자",
+  "phone_number": "010-1234-5678",
+  "logo": {
+    "bbox": [10, 15, 120, 80],
+    "confidence": 0.85,
+    "method": "yolo",
+    "logo_path": "/uploads/logos/logo_1703123456789.png",
+    "logo_size": [110, 65]
+  }
+}
+```
+
+### 4. 고려사항
 
 ⚠️ **용량 제한**: 브라우저당 5-10MB 제한  
 ⚠️ **기기 종속**: 다른 기기에서 접근 불가  

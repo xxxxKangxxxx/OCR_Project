@@ -35,6 +35,22 @@ class OCRProcessor:
         if not os.path.exists(upload_folder):
             logger.info(f"Creating upload folder: {upload_folder}")
             os.makedirs(upload_folder)
+        
+        # 로고 추출기 초기화 (지연 로딩)
+        self._logo_extractor = None
+
+    @property
+    def logo_extractor(self):
+        """로고 추출기 지연 로딩"""
+        if self._logo_extractor is None:
+            try:
+                from .logo_extractor import LogoExtractor
+                self._logo_extractor = LogoExtractor(self.upload_folder)
+                logger.info("로고 추출기 초기화 완료")
+            except Exception as e:
+                logger.error(f"로고 추출기 초기화 실패: {str(e)}")
+                self._logo_extractor = None
+        return self._logo_extractor
 
     def validate_image(self, image_path: str) -> bool:
         """이미지 파일 유효성 검사"""
